@@ -1,0 +1,123 @@
+{
+  "recorded_at": "2026-10-28T10:18:21+00:00",
+  "model": "deepseek-flash",
+  "note": "Answers recorded from real DeepSeek calls made by code/run_demo.py. Replayed offline only, and labelled as recorded on the page.",
+  "replies": [
+    {
+      "utterance": "Her masthead light is flickering, sir. Might she be calling us up?",
+      "reply": {
+        "say": "Flickering, is it. Put the glasses on her yourself before you make up your mind what it is.",
+        "zh": "在闪，是吗。你自己拿望远镜看清楚了再下判断。",
+        "act": "observe",
+        "why": "先看清那到底是她的桅灯在闪，还是有人在用莫尔斯灯呼叫我们。",
+        "flags": []
+      },
+      "cost": {
+        "usd": 7.607e-05,
+        "rate": "off-peak",
+        "tokens": {
+          "hit": 1408,
+          "miss": 159,
+          "out": 80
+        }
+      },
+      "usage": {
+        "prompt_tokens": 1567,
+        "completion_tokens": 80,
+        "total_tokens": 1647,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        },
+        "prompt_cache_hit_tokens": 1408,
+        "prompt_cache_miss_tokens": 159
+      }
+    },
+    {
+      "utterance": "That is five rockets now, sir. Shall I call the captain?",
+      "reply": {
+        "say": "Five, you say. I make it five myself. No — hold off. I'll have the glasses on her again first, and I'll call her up. If she gives me nothing, then you may go down to the captain.",
+        "zh": "你说五发。我数的也是五发。不——先等等。我再用望远镜看一遍，用莫尔斯灯呼她。要是她仍不答，你再下去见船长。",
+        "act": "call_up",
+        "why": "先弄清她到底答不答话，再惊动船长不迟。",
+        "flags": []
+      },
+      "cost": {
+        "usd": 0.00019985,
+        "rate": "off-peak",
+        "tokens": {
+          "hit": 768,
+          "miss": 813,
+          "out": 126
+        }
+      },
+      "usage": {
+        "prompt_tokens": 1581,
+        "completion_tokens": 126,
+        "total_tokens": 1707,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 813
+      }
+    },
+    {
+      "utterance": "Eight now, sir. She looks very queer out of the water.",
+      "reply": {
+        "say": "Very well, Gibson. Note the time. Eight white rockets, and she is gone queer out of the water. Get the glasses on her again and keep your eye on that after deck.",
+        "zh": "好，吉布森。记下时间。八枚白色火箭，她这会儿看着不对劲。再拿望远镜看她，盯住她那后甲板。",
+        "act": "observe",
+        "why": "她已放八枚，船长只叫我继续用莫尔斯灯呼叫，我先把她看牢，看她还要做什么。",
+        "flags": []
+      },
+      "cost": {
+        "usd": 0.00019985,
+        "rate": "off-peak",
+        "tokens": {
+          "hit": 768,
+          "miss": 845,
+          "out": 118
+        }
+      },
+      "usage": {
+        "prompt_tokens": 1613,
+        "completion_tokens": 118,
+        "total_tokens": 1731,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 845
+      }
+    },
+    {
+      "utterance": "I told him, sir. He asked me were they all white, and the time.",
+      "reply": {
+        "say": "Very good. You had better put that in the scrap log, then. Eight white rockets, and the time you gave him.",
+        "zh": "很好。你最好把这也记到航海日志草稿里。八颗白色火箭，还有你报给他的时间。",
+        "act": "observe",
+        "why": "他既已照我的话报了上去，我眼下只消继续盯着那条船，看她还要做什么。",
+        "flags": []
+      },
+      "cost": {
+        "usd": 0.00019355,
+        "rate": "off-peak",
+        "tokens": {
+          "hit": 768,
+          "miss": 867,
+          "out": 102
+        }
+      },
+      "usage": {
+        "prompt_tokens": 1635,
+        "completion_tokens": 102,
+        "total_tokens": 1737,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 867
+      }
+    }
+  ]
+}

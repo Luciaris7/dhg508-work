@@ -1,0 +1,486 @@
+{
+  "meta": {
+    "title": "The Californian, middle watch, 14-15 April 1912",
+    "about": "Every fact the second officer may know, and every fact the court later established, with a locator. 'who' says who could have known it in 1912: 'stone' = the character's memory; 'world' = what the sim's clock does; 'gibson' = what the apprentice can see; 'later' = the court's finding, which must never reach the 1912 prompt.",
+    "sources": {
+      "report": "Loss of the Steamship 'Titanic', Report of a Formal Investigation (Washington, 1912), Project Gutenberg #39415. Local copy: week3&4/sources/raw/british-inquiry-1912-loss-of-steamship-titanic.txt. 'L' locators are line numbers in that file.",
+      "tip": "Titanic Inquiry Project transcription of the British Wreck Commissioner's Inquiry, Day 7 (14 May 1912): testimony of James Gibson (Q7412-7610) and Herbert Stone (Q7803-7960). https://www.titanicinquiry.org/BOTInq/BOTInq07Gibson01.php and .../BOTInq07Stone01.php. 'Q' locators are question numbers in the minutes.",
+      "beesley": "Lawrence Beesley, The Loss of the S.S. Titanic (1912), Project Gutenberg #6675. Local copy: week3&4/sources/raw/beesley-1912-loss-of-ss-titanic.txt."
+    }
+  },
+  "facts": [
+    {
+      "id": "cal.ship",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "The Californian is a Leyland Line steamer of 6,223 tons gross, on passage from London to Boston, with no passengers aboard; her full speed is twelve and a half to thirteen knots.",
+      "source": "report",
+      "locator": "L3303",
+      "quote": "was on her passage from London",
+      "note": "报告 §V 开头。"
+    },
+    {
+      "id": "cal.stopped",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "At 10.20 p.m. the ship stopped and reversed her engines: she was running into field ice that stretched as far as could be seen to the northward and southward.",
+      "source": "report",
+      "locator": "L3333",
+      "quote": "she was obliged to stop and reverse engines",
+      "note": "停船的原因与时刻。"
+    },
+    {
+      "id": "cal.heading",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "The master 'twisted her head' to E.N.E. by the compass, and she stayed approximately stationary until 5.15 a.m., swinging slowly to starboard.",
+      "source": "report",
+      "locator": "L3343",
+      "quote": "twisted her head",
+      "note": "船头指向决定灯在哪个方位。"
+    },
+    {
+      "id": "cal.scraplog",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "The log book is written up from the scrap log by the chief officer. The scrap log is destroyed.",
+      "source": "report",
+      "locator": "L3339",
+      "quote": "The scrap log is destroyed",
+      "note": "唯一的原始记录被销毁——模拟的核心机制之一。"
+    },
+    {
+      "id": "steamer.approach",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "At about 11 p.m. a steamer's light was seen approaching from the eastward.",
+      "source": "report",
+      "locator": "L3348",
+      "quote": "At about 11 p. m. a steamer's light was seen approaching from the eastward",
+      "note": "来船第一次被看见。"
+    },
+    {
+      "id": "wireless.ice",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "The master had the operator tell the approaching steamer, 'We are stopped and surrounded by ice.' The answer came back: 'Keep out.'",
+      "source": "report",
+      "locator": "L3353",
+      "quote": "We are stopped and surrounded by ice",
+      "note": "灯火管制之前，两船还通过无线电报。"
+    },
+    {
+      "id": "steamer.lightsout",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "Her lights went out at 11.40, at the moment she stopped; she was then a passenger steamer, stopped, about five miles off.",
+      "source": "report",
+      "locator": "L3395",
+      "quote": "these lights went out at 11.40",
+      "note": "值班交接时第三副说的话。"
+    },
+    {
+      "id": "handover",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "The third officer handed over the watch just after midnight: 'she has been stopped since 11.40; she is a passenger steamer. At about the moment she stopped she put her lights out.'",
+      "source": "report",
+      "locator": "L3412",
+      "quote": "she has been stopped since 11.40; she is a passenger steamer",
+      "note": "Stone 接班时知道的事。"
+    },
+    {
+      "id": "master.order",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "The master pointed the steamer out to me and told me to report to him if her bearings altered or if she got any closer.",
+      "source": "report",
+      "locator": "L3426",
+      "quote": "him if her bearings altered or if she got any closer",
+      "note": "这条「只报告方位变化」的指示，是整件事的枢纽。"
+    },
+    {
+      "id": "stone.identity",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I am Herbert Stone, second officer of the Californian: I hold a first mate's steamship certificate and I have been at sea eight years. I have the middle watch, twelve to four.",
+      "source": "tip",
+      "locator": "Q7803",
+      "quote": "A first mate's steamship certificate.",
+      "note": "Stone 的资历；Q7835「Eight years」。"
+    },
+    {
+      "id": "gibson.identity",
+      "who": [
+        "stone",
+        "gibson"
+      ],
+      "kind": "evidenced",
+      "text": "Gibson is the apprentice of the middle watch: twenty years old, of 38, Railway Terrace, Southport. He has the watch with me.",
+      "source": "tip",
+      "locator": "Q7412",
+      "quote": "Is your name James Gibson?",
+      "note": "学徒的身份；Q7413「Twenty」、Q7414 地址。"
+    },
+    {
+      "id": "gibson.gear",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I had sent Gibson below earlier to get ready some gear for streaming a fresh patent log.",
+      "source": "tip",
+      "locator": "Q7932",
+      "quote": "He was sent down to get ready some gear for streaming a fresh patent log.",
+      "note": "解释了学徒为什么有一段时间不在桥楼。"
+    },
+    {
+      "id": "gibson.sight",
+      "who": [
+        "gibson"
+      ],
+      "kind": "evidenced",
+      "text": "About 12.20 a.m. I see, right on the starboard beam, a white masthead light and a red sidelight (the red one only with the glasses), and a glare of white lights on her after deck. Distance four to seven miles. The white light is flickering.",
+      "source": "report",
+      "locator": "L3431",
+      "quote": "whose attention was first drawn to the steamer's lights at about 12.20 a. m.",
+      "note": "Gibson 证词 Q7424-7445：方位正横、4-7 英里、闪烁。"
+    },
+    {
+      "id": "gibson.flicker",
+      "who": [
+        "gibson",
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I thought the flickering was a Morse lamp calling us up; I answered on the keyboard and got no reply, then put the glasses on her and made out that it was her masthead light.",
+      "source": "report",
+      "locator": "L3435",
+      "quote": "calling us up",
+      "note": "Gibson Q7442-7459；闪烁最终被判定为桅灯本身。"
+    },
+    {
+      "id": "stone.rockets.five",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "About 1.10 a.m. I reported to the master by the voice pipe that I had seen five white rockets, and that I had called her up on the Morse lamp with no answer.",
+      "source": "report",
+      "locator": "L3439",
+      "quote": "Mr. Stone reported to the captain by voice pipe, that he had seen five white rockets",
+      "note": "Stone Q7829-7830。"
+    },
+    {
+      "id": "master.company",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "The master asked: 'Are they company's signals?' I answered: 'I do not know, but they appear to me to be white rockets.'",
+      "source": "report",
+      "locator": "L3441",
+      "quote": "Are they company's signals?",
+      "note": "Stone Q7870-7871；一字不差的问答。"
+    },
+    {
+      "id": "master.morsing",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "The master told me to 'go on Morsing', and, when I got any information, to send the apprentice down to him with it.",
+      "source": "report",
+      "locator": "L3443",
+      "quote": "go on Morsing",
+      "note": "Stone Q7878-7879。船长没有要上来。"
+    },
+    {
+      "id": "stone.leave",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I just took them as white rockets, and informed the master and left him to judge.",
+      "source": "tip",
+      "locator": "Q7853",
+      "quote": "I just took them as white rockets, and informed the Master and left him to judge.",
+      "note": "Stone 自述的分工——把判断交上去。"
+    },
+    {
+      "id": "stone.notdistress",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I did not think they were distress signals; it did not occur to me at the time. I thought perhaps the ship was in communication with some other ship, or signalling that she had big icebergs around her.",
+      "source": "tip",
+      "locator": "Q7856",
+      "quote": "Did you think that they were distress signals?",
+      "note": "Q7857「It did not occur to me at the time」；Q7844 他当时的猜测。"
+    },
+    {
+      "id": "stone.company.no",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I did not think they were company's signals. I had never seen company's signals like them before.",
+      "source": "tip",
+      "locator": "Q7901",
+      "quote": "I had never seen company's signals like them before.",
+      "note": "他口头服从了船长，心里并未被说服。"
+    },
+    {
+      "id": "stone.low",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "These rockets did not go very high: they were low lying, only about half the height of the steamer's masthead light.",
+      "source": "tip",
+      "locator": "Q7921",
+      "quote": "they were only about half the height of the steamer's masthead light",
+      "note": "他不肯下结论的一个理由：火箭太低了。"
+    },
+    {
+      "id": "stone.othership",
+      "who": [
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I supposed the rockets might possibly come from some other ship beyond her; but when the steamer altered her bearing, the rockets altered theirs too.",
+      "source": "tip",
+      "locator": "Q7908",
+      "quote": "Possibly from a greater distance past the ship.",
+      "note": "Q7922 方位同步，指向来船。"
+    },
+    {
+      "id": "gibson.tramp",
+      "who": [
+        "gibson",
+        "stone"
+      ],
+      "kind": "evidenced",
+      "text": "I thought she was a tramp steamer and said so; but a tramp does not usually show a glare of lights on her after deck.",
+      "source": "tip",
+      "locator": "Q7545",
+      "quote": "I thought she was a tramp steamer, and I told him so.",
+      "note": "学徒与二副对「那是什么船」的判断都不准。"
+    },
+    {
+      "id": "stone.queer",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "Between one and 1.40 I remarked to Gibson: 'Look at her now, she looks very queer out of water, her lights look queer.'",
+      "source": "report",
+      "locator": "L3455",
+      "quote": "Look at her now, she looks very queer out of water, her lights look queer",
+      "note": "Gibson Q7515-7523：灯看起来不正常，像有横倾。"
+    },
+    {
+      "id": "stone.fornothing",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "I remarked that a ship is not going to fire rockets at sea for nothing.",
+      "source": "report",
+      "locator": "L3456",
+      "quote": "A ship is not going to fire rockets at sea for nothing",
+      "note": "他自己承认可能说过这句话。"
+    },
+    {
+      "id": "stone.three",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "After the master's answer, the steamer fired three more white rockets; I saw them and so did Gibson.",
+      "source": "report",
+      "locator": "L3449",
+      "quote": "the vessel fired three more white rockets",
+      "note": "加上先前五枚，共八枚。"
+    },
+    {
+      "id": "stone.send",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "After watching her some twenty minutes more I sent Gibson down to the master, telling him to be sure and wake him: eight white lights like white rockets, the steamer disappearing in the south-west, called up repeatedly with no information whatsoever.",
+      "source": "report",
+      "locator": "L3464",
+      "quote": "be sure and wake him, and tell him that altogether we had seen eight",
+      "note": "Stone Q7949；Gibson Q7552 的转述几乎一样。"
+    },
+    {
+      "id": "master.205",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "The master asked were they all white, whether there was any colour in them, and the time. It was five minutes past two by the wheelhouse clock. He was awake. He gave no instructions.",
+      "source": "report",
+      "locator": "L3472",
+      "quote": "the master asked him if all the rockets were white, and also asked",
+      "note": "Gibson Q7560-7568。"
+    },
+    {
+      "id": "stone.240",
+      "who": [
+        "stone",
+        "world"
+      ],
+      "kind": "evidenced",
+      "text": "At about 2.40 a.m. I called the master again: the ship from which I had seen the rockets had disappeared, bearing S.W. half W. He asked again whether I was certain there was no colour in the lights.",
+      "source": "report",
+      "locator": "L3480",
+      "quote": "At about 2.40 a. m. Mr. Stone again called up the master by voice pipe",
+      "note": "报告在这里开始列出三人的说法互相矛盾。"
+    },
+    {
+      "id": "beesley.rockets",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "From the sinking ship: 'Rockets!' Anybody knows what rockets at sea mean.",
+      "source": "beesley",
+      "locator": "L1304",
+      "quote": "Anybody knows what rockets at sea mean.",
+      "note": "同一批火箭，在另一条船上不需要解释。"
+    },
+    {
+      "id": "beesley.fishing",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "Beesley reports the counter-argument he was given in 1912: rockets are part of a fishing smack's equipment, sent up to show small boats how to return.",
+      "source": "beesley",
+      "locator": "L2660",
+      "quote": "rockets are part of a fishing smack's equipment",
+      "note": "1912 年火箭并非只用于求救——这是「看不懂」的物质基础。"
+    },
+    {
+      "id": "court.rockets",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The court found: the rockets sent up from the Titanic were distress signals; the Californian saw eight; the ship seen was the Titanic.",
+      "source": "report",
+      "locator": "L3538",
+      "quote": "The rockets sent up from the _Titanic_ were distress signals",
+      "note": "L3522「The _Californian_ saw eight.」"
+    },
+    {
+      "id": "court.ice",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The ice around the Californian was loose, extending not more than two or three miles toward the Titanic; she could have pushed through to open water without serious risk.",
+      "source": "report",
+      "locator": "L3557",
+      "quote": "could have pushed through the ice to the open water without any serious risk",
+      "note": "法庭对「能不能过去」的判断。"
+    },
+    {
+      "id": "court.saved",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "Had she done so she might have saved many if not all of the lives that were lost.",
+      "source": "report",
+      "locator": "L3559",
+      "quote": "Had she done so she might have saved many if not all of the lives",
+      "note": "报告 §V 最后一句。"
+    },
+    {
+      "id": "court.distance",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The master said the two vessels were about five miles apart; the court was advised the distance was probably greater, though not more than eight to ten miles.",
+      "source": "report",
+      "locator": "L3553",
+      "quote": "not more than 8 to 10 miles",
+      "note": "距离本身就是争点。"
+    },
+    {
+      "id": "court.night",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The night was clear and the sea was smooth.",
+      "source": "report",
+      "locator": "L3556",
+      "quote": "The night was clear and the sea was smooth",
+      "note": "没有雾、没有浪：看得见，却仍然看不懂。"
+    },
+    {
+      "id": "court.number",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The number of rockets sent up by the Titanic was about eight; the Californian saw eight; they were sent up between about 12.45 and 1.45.",
+      "source": "report",
+      "locator": "L3539",
+      "quote": "The number sent up by the _Titanic_ was about eight",
+      "note": "求救信号与目击数量恰好对上。"
+    },
+    {
+      "id": "court.discrepancy",
+      "who": [
+        "later"
+      ],
+      "kind": "evidenced",
+      "text": "The master said he was told at about 1.15 of a white rocket, not five, and had no recollection of anything being reported to him at all between 1.30 and 4.30, though he remembered Gibson opening and closing the chart-room door.",
+      "source": "report",
+      "locator": "L3489",
+      "quote": "he had no recollection of anything being reported to him at all",
+      "note": "同一夜，三种记忆。报告说「considerable discrepancy」。"
+    }
+  ]
+}

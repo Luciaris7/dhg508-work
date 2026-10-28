@@ -1,0 +1,70 @@
+Transcribed extracts from the British Wreck Commissioner's Inquiry, Day 7
+(14 May 1912): testimony of James Gibson (apprentice) and Herbert Stone
+(second officer), both of the ss Californian.
+
+Source pages (fetched 2026-10-07; the course network blocks the shell's
+outbound HTTPS, so the pages could not be saved whole):
+
+    https://www.titanicinquiry.org/BOTInq/BOTInq07Gibson01.php
+    https://www.titanicinquiry.org/BOTInq/BOTInq07Stone01.php
+
+`Q` numbers are the question numbers printed in the minutes. Each line below is
+copied verbatim from the page; `data/verify_kb.py` checks that every quotation
+in `californian_kb.json` appears here, and prints the URL so a reader can check
+the extract against the original.
+
+The report of the formal investigation quotes most of the same exchange; where
+a fact is in the report as well, the knowledge base cites the report, because
+that copy sits in this repository and can be checked offline.
+
+Q7412  Is your name James Gibson?
+Q7413  Twenty.
+Q7414  38, Railway Terrace, Southport.
+Q7424  About twenty minutes past twelve.
+Q7425  A white masthead light and a red sidelight.
+Q7426  I could see the red light with the glasses.
+Q7428  I saw a glare of lights on her after deck.
+Q7438  Right on the starboard beam.
+Q7440  From four to seven miles.
+Q7442  It was flickering.
+Q7443  I thought it was a Morse light calling us up.
+Q7455  I could have done if it was a Morse light, but I looked at her through the glasses afterwards, and found it was a masthead light.
+Q7464  That she had fired five rockets.
+Q7477  He told me that he had reported it to the Captain.
+Q7479  To call her up on the Morse light.
+Q7483  I saw three rockets.
+Q7501  White ones.
+Q7515  The Second Officer remarked to me, "Look at her now; she looks very queer out of the water; her lights look queer."
+Q7522  She seemed as if she had a heavy list to starboard.
+Q7529  He remarked to me that a ship was not going to fire rockets at sea for nothing.
+Q7545  I thought she was a tramp steamer, and I told him so.
+Q7552  "Call the Captain and tell him that that ship has disappeared in the South-West; that we are heading West-South-West, and that she has fired altogether eight rockets."
+Q7557  Did you find the Captain there? - Yes.
+Q7560  He asked me were they all white?
+Q7565  Five minutes past two by the wheelhouse clock.
+Q7568  Or tell him anything further? - No.
+Q7570  Was he awake? - Yes, Sir.
+Q7803  What certificate do you hold? - A first mate's steamship certificate.
+Q7815  He asked me to tell him if the bearing of the steamer altered or if she got any closer to us.
+Q7829  I communicated that I had seen white lights in the sky in the direction of this other steamer, which I took to be white rockets.
+Q7830  Just about 1.10.
+Q7832  First of all, I was walking up and down the bridge and I saw one white flash in the sky, immediately above this other steamer.
+Q7835  How long have you been at sea? - Eight years.
+Q7837  It was just a white flash in the sky; it might have been anything.
+Q7844  I thought that perhaps the ship was in communication with some other ship, or possibly she was signaling to us to tell us she had big icebergs around her.
+Q7853  I just took them as white rockets, and informed the Master and left him to judge.
+Q7856  Did you think that they were distress signals? - No.
+Q7857  It did not occur to me at the time.
+Q7870  He asked me, "Are they Company's signals?"
+Q7871  I said, "I do not know, but they appear to me to be white rockets."
+Q7879  When I received any information to send the Apprentice down to him with it.
+Q7899  He emphasised the fact about company's signals.
+Q7901  I had never seen company's signals like them before.
+Q7906  Naturally, the first thought that crossed my mind was that the ship might be in trouble, but subsequent events showed that the ship steamed away from us.
+Q7908  Possibly from a greater distance past the ship.
+Q7921  I have remarked at different times that these rockets did not appear to go very high; they were very low lying; they were only about half the height of the steamer's masthead light and I thought rockets would go higher than that.
+Q7929  That would tell you as a sailor that it was almost certain that those rockets were being fired from that steamer which was showing you those navigation lights? - Almost certain, yes.
+Q7932  He was sent down to get ready some gear for streaming a fresh patent log.
+Q7949  I told Gibson to go down to the Master and be sure and wake him up and tell him that altogether we had seen eight of these white lights like white rockets in the direction of this other steamer; that this steamer was disappearing in the S.W., that we had called her up repeatedly on the Morse lamp and received no information whatsoever.
+Q7952  He told me he had woke the Captain up and given him my report; the Captain asked him the time and asked him if he were sure there were no colours in them, red or green.
+Q7957  A gradual disappearing of all her lights, which would be perfectly natural with a ship steaming away from us.

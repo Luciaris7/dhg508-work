@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Californian · 中班 00:15–02:20</title>
+<style>
+  :root{
+    --ink:#e9e4d8; --dim:#9aa3a5; --paper:#0d1417; --panel:#131d21; --line:#24343a;
+    --brass:#c8a45c; --red:#d9736a; --green:#79b8a0; --blue:#7fa8c9;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.6}
+  header{display:flex;align-items:baseline;gap:18px;padding:14px 22px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#101a1e,#0d1417)}
+  header h1{font-size:16px;font-weight:600;letter-spacing:.08em;margin:0;color:var(--brass)}
+  header .clock{font-family:Consolas,monospace;font-size:26px;letter-spacing:.08em;color:var(--ink)}
+  header .where{color:var(--dim);font-size:13px}
+  header .badge{margin-left:auto;font-size:12px;padding:3px 9px;border:1px solid var(--line);border-radius:999px;color:var(--dim)}
+  header .badge.live{color:var(--green);border-color:#2c4f45}
+  header .badge.rec{color:var(--brass);border-color:#4a3d22}
+  main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.95fr);gap:0;min-height:calc(100vh - 62px)}
+  #left{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  #scene{padding:18px 22px;overflow-y:auto;flex:1;max-height:calc(100vh - 62px - 170px)}
+  #right{display:flex;flex-direction:column;min-height:0}
+  .ev{margin:0 0 12px}
+  .ev .t{font-family:Consolas,monospace;color:var(--brass);font-size:12px;margin-right:8px}
+  .ev .who{color:var(--dim);font-size:12px;margin-right:6px}
+  .ev.player{color:var(--blue)}
+  .ev.stone .say{font-family:Georgia,"Times New Roman",serif;font-size:17px;color:#f3eee2}
+  .ev.master .say{font-family:Georgia,serif;font-size:16px;color:#e6dcc4}
+  .ev .zh{color:var(--dim);font-size:13px;margin-top:2px}
+  .ev.log{color:var(--green)}
+  .ev.end{color:var(--red);font-weight:600}
+  .panel{border-top:1px solid var(--line);padding:14px 18px}
+  .panel h2{font-size:12px;letter-spacing:.12em;color:var(--dim);margin:0 0 8px;font-weight:600;text-transform:uppercase}
+  #stone .say{font-family:Georgia,serif;font-size:17px;min-height:1.6em}
+  #stone .zh{color:var(--dim);font-size:13px}
+  #stone .why{color:#7d8a8d;font-size:12px;margin-top:6px}
+  #stone .warn{color:var(--red);font-size:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  button{font:inherit;font-size:13px;padding:5px 10px;border-radius:4px;cursor:pointer;
+    border:1px solid var(--line);background:#18262b;color:var(--ink)}
+  button:hover{border-color:var(--brass);color:#fff3d6}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button.primary{background:#2a3a30;border-color:#3d5a4a;color:#dff0e6}
+  input[type=text]{width:100%;font:inherit;font-size:14px;padding:7px 9px;border-radius:4px;
+    border:1px solid var(--line);background:#0a1114;color:var(--ink)}
+  input[type=text]:focus{outline:none;border-color:var(--brass)}
+  .row{display:flex;gap:6px;align-items:center;margin-top:6px}
+  .row input{flex:1}
+  #log ol{margin:0;padding-left:22px;font-size:13px;color:#d9d2c2}
+  #log li{margin-bottom:3px}
+  #log .x{opacity:.5;margin-left:6px;padding:0 5px;font-size:11px}
+  footer{border-top:1px solid var(--line);padding:9px 22px;font-size:12px;color:var(--dim);
+    display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:#0a1114}
+  footer a{color:var(--blue);text-decoration:none}
+  .hint{color:#7d8a8d;font-size:12px;margin-top:4px}
+  #ending{position:fixed;inset:0;background:rgba(4,8,10,.94);overflow-y:auto;padding:34px 8vw;z-index:9}
+  #ending h2{font-size:19px;color:var(--brass);margin-top:30px;font-weight:600}
+  #ending h3{font-size:15px;color:var(--ink);margin:0 0 4px}
+  #ending .q{font-family:Georgia,serif;color:#f0e9d9;margin:0 0 4px}
+  #ending .src{color:var(--dim);font-size:12px}
+  #ending .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:12px}
+  #ending .card{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#0f181b}
+  #ending .big{font-family:Georgia,serif;font-size:18px;line-height:1.55}
+  #ending ul{padding-left:20px}
+  .kbd{border:1px solid var(--line);border-radius:3px;padding:0 4px;font-size:11px;color:var(--dim)}
+  @media (max-width:900px){main{grid-template-columns:1fr}#left{border-right:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>CALIFORNIAN</h1>
+  <div class="clock" id="clock">00:15</div>
+  <div class="where" id="where">桥楼 · the bridge</div>
+  <div class="badge" id="mode">…</div>
+</header>
+
+<main>
+  <section id="left">
+    <div id="scene"></div>
+    <div class="panel" id="sees">
+      <h2>你能看见</h2>
+      <div id="strange" class="hint"></div>
+    </div>
+  </section>
+
+  <section id="right">
+    <div class="panel" id="stone">
+      <h2>Mr Stone · 二副 <span id="actsrc" class="hint"></span></h2>
+      <div class="say" id="stone-say">—</div>
+      <div class="zh" id="stone-zh"></div>
+      <div class="why" id="stone-why"></div>
+      <div class="warn" id="stone-warn"></div>
+    </div>
+
+    <div class="panel" id="log">
+      <h2>值班簿 scrap log <span id="logcount" class="hint"></span></h2>
+      <ol id="loglines"></ol>
+      <div class="row">
+        <input type="text" id="logtext" maxlength="160" placeholder="记一行（写什么、不写什么，是你的事）">
+        <button id="logbtn">写下</button>
+      </div>
+    </div>
+
+    <div class="panel" id="act">
+      <h2>动作</h2>
+      <div class="chips" id="looks"></div>
+      <div class="chips" id="walks" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="text" id="saytext" placeholder="对 Stone 说一句英文（页面假设你说出了口）">
+        <button id="saybtn" class="primary">说</button>
+      </div>
+      <div class="chips" id="suggest" style="margin-top:8px"></div>
+      <div class="chips" style="margin-top:8px">
+        <button data-act="morse">用莫尔斯灯呼叫</button>
+        <button data-act="wait">等一会儿</button>
+        <button id="reportbtn" style="display:none">向船长报告</button>
+      </div>
+      <div class="hint" id="refusal"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span id="footmode"></span>
+  <span id="spend"></span>
+  <span id="turns"></span>
+  <span style="margin-left:auto"><button id="reset">重来</button></span>
+</footer>
+
+<div id="ending" style="display:none"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const OBJECT_LABELS = {
+  light:"看那盏灯", glasses:"拿望远镜", clock:"看钟", log:"翻值班簿", morse:"看莫尔斯键盘",
+  ice:"看冰", stone:"看二副", tube:"看传声筒", gear:"看计程仪零件", master:"看船长", chart:"看海图"
+};
+const PLACE_LABELS = {bridge:"回桥楼", foredeck:"下前甲板", chart_room:"去海图室"};
+const SUGGESTIONS = [
+  "Her masthead light is flickering, sir. Might she be calling us up?",
+  "That is five rockets now, sir. Shall I call the captain?",
+  "Do you make her out to be a passenger steamer?",
+  "A ship does not fire rockets at sea for nothing, sir.",
+  "I will keep calling her up and watch her bearing."
+];
+
+let S = null;
+let transcript = [];
+
+async function api(path, body) {
+  const options = body ? {method:"POST", headers:{"Content-Type":"application/json"},
+                          body:JSON.stringify(body)} : {};
+  const response = await fetch(path, options);
+  const data = await response.json();
+  return {status:response.status, data};
+}
+
+function esc(text){
+  return String(text == null ? "" : text).replace(/[&<>"]/g,
+    (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+function addEvents(events){
+  (events || []).forEach((event) => transcript.push(event));
+  renderScene();
+}
+
+function renderScene(){
+  const box = $("scene");
+  box.innerHTML = transcript.map((event) => {
+    const kind = event.kind || "narrate";
+    const t = `<span class="t">${esc(event.time)}</span>`;
+    const who = `<span class="who">${esc(event.who)}</span>`;
+    const zh = event.zh ? `<div class="zh">${esc(event.zh)}</div>` : "";
+    if (kind === "stone" || kind === "master") {
+      return `<div class="ev ${kind}">${t}${who}<span class="say">${esc(event.text)}</span>${zh}</div>`;
+    }
+    if (kind === "log") return `<div class="ev log">${t}${who}${esc(event.text)}</div>`;
+    if (kind === "end") return `<div class="ev end">${t}${who}${esc(event.text)}</div>`;
+    if (kind === "player") return `<div class="ev player">${t}${who}${esc(event.text)}${zh}</div>`;
+    return `<div class="ev ${kind}">${t}${who}${esc(event.text)}${zh}</div>`;
+  }).join("");
+  box.scrollTop = box.scrollHeight;
+}
+
+function render(){
+  if (!S) return;
+  $("clock").textContent = S.clock;
+  $("where").textContent = S.place_name;
+  const badge = $("mode");
+  if (S.mode === "deepseek") { badge.textContent = "真调用 · " + S.model; badge.className = "badge live"; }
+  else { badge.textContent = "录制重放（不是真调用）"; badge.className = "badge rec"; }
+
+  $("strange").innerHTML = S.strange.map((line) => "· " + esc(line)).join("<br>");
+
+  const st = S.stone || {};
+  $("stone-say").textContent = st.say || "—";
+  $("stone-zh").textContent = st.zh || "";
+  $("stone-why").textContent = st.why ? "他的理由（模型自述，不是史料）：" + st.why : "";
+  const warn = [];
+  if (st.flags && st.flags.includes("hindsight"))
+    warn.push("模型说出了 1912 年不可能知道的事，已被标出（这条回答不当作史实）。");
+  if (st.refusal) warn.push("世界没有让这件事发生：" + st.refusal);
+  $("stone-warn").textContent = warn.join(" ");
+  $("actsrc").textContent = st.source ? "（" + st.source + "）" : "";
+
+  $("logcount").textContent = (S.log || []).length + " / " + S.log_max + " 行";
+  $("loglines").innerHTML = (S.log || []).map((entry, index) =>
+    `<li>${esc(entry.time)} ${esc(entry.text)}<button class="x" data-cross="${index+1}">划掉</button></li>`
+  ).join("") || "<li class='hint'>还没有一行。</li>";
+
+  $("looks").innerHTML = S.objects.map((target) =>
+    `<button data-look="${esc(target)}">${esc(OBJECT_LABELS[target] || target)}</button>`).join("");
+  $("walks").innerHTML = S.can_walk.map((place) =>
+    `<button data-walk="${esc(place)}">${esc(PLACE_LABELS[place] || place)}</button>`).join("");
+  $("suggest").innerHTML = SUGGESTIONS.map((line) =>
+    `<button data-suggest="${esc(line)}">${esc(line.length > 42 ? line.slice(0,42)+"…" : line)}</button>`).join("");
+
+  $("reportbtn").style.display =
+    (S.place === "chart_room" && S.sent_below && !S.reported_to_master) ? "" : "none";
+
+  const spend = S.spend || {calls:0, usd:0, in:0, out:0};
+  $("footmode").textContent = S.mode === "deepseek"
+    ? "模型：" + S.model + "（真调用）"
+    : "模型：无（重放录制回答）";
+  $("spend").textContent = `调用 ${spend.calls} 次 · 输入 ${spend.in} tok · 输出 ${spend.out} tok · 约 $${(spend.usd||0).toFixed(5)}`;
+  $("turns").textContent = `动作 ${S.turns} 次 · 被世界拒绝 ${S.refusals} 次`;
+  $("logtext").maxLength = 160;
+  $("logbtn").disabled = (S.log || []).length >= S.log_max;
+  $("saybtn").disabled = S.place !== "bridge" || S.ended;
+  $("logtext").disabled = S.ended;
+  if (S.ended) showEnding();
+}
+
+async function send(action){
+  $("refusal").textContent = "";
+  const {status, data} = await api("/api/act", action);
+  if (data.state) S = data.state;
+  if (status === 409) {
+    $("refusal").textContent = "世界没有允许：" + (data.message || "");
+    render(); return;
+  }
+  if (status !== 200) {
+    $("refusal").textContent = "出错了：" + ((data.error && data.error.message) || status);
+    render(); return;
+  }
+  if (data.events && data.events.length) addEvents(data.events);
+  $("refusal").textContent = "";
+  render();
+}
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("button");
+  if (!target || target.disabled) return;
+  if (target.dataset.look) return send({action:"look", target:target.dataset.look});
+  if (target.dataset.walk) return send({action:"walk", to:target.dataset.walk});
+  if (target.dataset.cross) return send({action:"cross", line:target.dataset.cross});
+  if (target.dataset.act === "morse") return send({action:"morse", text:"Gibson"});
+  if (target.dataset.act === "wait") return send({action:"wait"});
+  if (target.dataset.suggest) { $("saytext").value = target.dataset.suggest; $("saytext").focus(); return; }
+  if (target.id === "saybtn") {
+    const text = $("saytext").value.trim();
+    if (!text) return;
+    $("saytext").value = "";
+    return send({action:"say", text});
+  }
+  if (target.id === "logbtn") {
+    const text = $("logtext").value.trim();
+    if (!text) return;
+    $("logtext").value = "";
+    return send({action:"write", text});
+  }
+  if (target.id === "reportbtn") return send({action:"report"});
+  if (target.id === "reset") return resetGame();
+  if (target.id === "again") { $("ending").style.display = "none"; return resetGame(); }
+  if (target.id === "close") { $("ending").style.display = "none"; return; }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && event.target.id === "saytext") { event.preventDefault(); $("saybtn").click(); }
+  if (event.key === "Enter" && event.target.id === "logtext") { event.preventDefault(); $("logbtn").click(); }
+});
+
+async function resetGame(){
+  const {data} = await api("/api/reset", {});
+  S = data.state;
+  transcript = (S.events || []).slice();
+  $("ending").style.display = "none";
+  renderScene(); render();
+}
+
+async function showEnding(){
+  const {data} = await api("/api/ending");
+  const facts = data.facts || {};
+  const quote = (key, label) => {
+    const fact = facts[key];
+    if (!fact) return "";
+    return `<div class="card"><h3>${esc(label)}</h3>
+      <p class="q">“${esc(fact.text)}”</p>
+      <div class="src">出处：${esc(fact.source)} · ${esc(fact.locator)}</div></div>`;
+  };
+  const lines = (data.scrap || []).map((entry) => `<li>${esc(entry.time)} ${esc(entry.text)}</li>`).join("");
+  const fair = (data.fair || []).map((entry) => `<li>${esc(entry.time)} ${esc(entry.text)}</li>`).join("");
+  const lost = (data.lost || []).map((entry) => `<li>${esc(entry.time)} ${esc(entry.text)}</li>`).join("");
+  const html = `
+    <div style="max-width:980px;margin:0 auto">
+      <h1 style="color:var(--brass);font-size:22px;letter-spacing:.06em">02:20 — 值班结束</h1>
+      <p class="big">Titanic 在两点二十分沉没，离这里五到十英里。Californian 的桥楼上没有人知道。
+      Stone 在两点四十分又对传声筒说了一次：那条船不见了，方位西南偏西半西。船长问他，灯里是不是一点颜色也没有。</p>
+      <p class="src">以上时间与对话：报告 §V；Gibson、Stone 的证词（Day 7）。</p>
+
+      <h2>1 · 你的值班簿</h2>
+      <div class="card"><ul>${lines || "<li>空白的。你什么也没写。</li>"}</ul></div>
+      <p class="src">报告说：航海日志由大副根据值班簿抄写；值班簿已销毁。抄写时留下了什么，报告没有说——
+      下面的“抄进日志的”与“没有抄进去的”，是本模拟按「只抄方位、航向与天气」的推断规则分的，不是史料。</p>
+      <div class="grid">
+        <div class="card"><h3>抄进航海日志的（推断）</h3><ul>${fair || "<li>没有。</li>"}</ul></div>
+        <div class="card"><h3>没有抄进去的（推断）</h3><ul>${lost || "<li>没有。</li>"}</ul></div>
+      </div>
+
+      <h2>2 · 法庭听到的</h2>
+      <div class="grid">
+        ${quote("stone.rockets.five", "Stone 在 1.10 的报告")}
+        ${quote("master.company", "船长的回答")}
+        ${quote("master.morsing", "船长的指示")}
+        ${quote("stone.send", "Stone 叫学徒下去时说的话")}
+        ${quote("master.205", "船长在两点零五分问的")}
+        ${quote("stone.queer", "Stone 说过的话")}
+        ${quote("stone.fornothing", "Stone 承认可能说过的话")}
+        ${quote("court.discrepancy", "三份证词对不上")}
+      </div>
+
+      <h2>3 · 判决</h2>
+      <div class="grid">
+        ${quote("court.rockets", "那八枚是什么")}
+        ${quote("court.number", "数量")}
+        ${quote("court.distance", "距离")}
+        ${quote("court.ice", "能不能过去")}
+        ${quote("court.saved", "代价")}
+      </div>
+
+      <h2>4 · 同一批火箭，在另一条船上</h2>
+      <div class="grid">
+        ${quote("beesley.rockets", "从沉船上看见的")}
+        ${quote("beesley.fishing", "1912 年一个真实的反对理由")}
+      </div>
+
+      <h2>5 · 这一局</h2>
+      <p>你看见了 ${data.seen_rockets} 枚火箭（船上共 ${data.rockets} 枚）；
+      你${data.reported ? "在两点零五分左右下去报告了船长" : "没有下去报告"}；
+      你写了 ${(data.scrap||[]).length} 行；一共 ${data.turns} 个动作。</p>
+      ${data.divergence ? `<p class="src">这一局偏离记录的地方：${esc(data.divergence)}</p>` : ""}
+
+      <h2>6 · 这一小时教了什么</h2>
+      <p class="big">用电影看这件事，你知道两边都在发生什么，所以“他应该过去”是廉价的。
+      在这里，你只有桥楼上一个人能看到的东西：一盏桅灯、八枚白火箭、一句“继续用莫尔斯灯叫”、
+      一个睡在海图室里的船长，和“她不过是条停在冰里的船”这个念头。
+      没有人做了一件看起来错的事——错的是所有这些小事加起来的方向。</p>
+      <p class="big">而你的值班簿告诉你第二件事：记录是抄出来的。
+      你写下的，不一定会被抄进日志；被抄进日志的，不一定被法庭听见；
+      被听见的，三个人的说法还互相矛盾。</p>
+      <p style="margin-top:26px">
+        <button id="again" class="primary">再走一次中班</button>
+        <button id="close">留在这张纸上</button>
+      </p>
+    </div>`;
+  $("ending").innerHTML = html;
+  $("ending").style.display = "block";
+}
+
+(async function start(){
+  const {data} = await api("/api/state");
+  S = data;
+  transcript = (S.events || []).slice();
+  renderScene(); render();
+})();
+</script>
+</body>
+</html>

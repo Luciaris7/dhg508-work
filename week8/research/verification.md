@@ -1,0 +1,111 @@
+# 自检记录
+
+运行环境：Windows，Python 3.14，无第三方库。全部不联网（除了 `run_demo.py` 那一次真调用）。
+
+## 1. 知识库：38 条事实，逐条查引文
+
+```
+python data/verify_kb.py
+```
+
+```
+  ok   cal.ship           report L3303     3303
+  ok   cal.stopped        report L3333     3333
+  ok   cal.heading        report L3343     3343
+  ok   cal.scraplog       report L3339     3339
+  ok   steamer.approach   report L3348     3348
+  ...
+  ok   court.rockets      report L3538     3538
+  ok   court.ice          report L3557     3557
+  ok   court.saved        report L3559     3559
+  ok   court.distance     report L3553     3553
+  ok   court.night        report L3556     3556
+  ok   court.number       report L3539     3539
+  ok   court.discrepancy  report L3489     3489
+
+38 facts, 0 failed
+```
+
+**第一次跑是 20 failed**，原因是我用估算的行号写 `locator`。后来给脚本加了 `--fix`，
+由它把真实行号写回 JSON——所以现在这些数字是搜出来的，不是我数的。
+
+## 2. 世界与角色：21 项
+
+```
+python code/check_sim.py
+```
+
+```
+  PASS  A1 the watch opens at 00:15 on the bridge
+  PASS  A2 the chart room is shut until you are sent
+  PASS  A3 looking at something that is not there is refused, with the list
+  PASS  A4 the scrap log holds eight lines; you must cross one out
+  PASS  A5 rockets fire on the world's clock, not the player's
+  PASS  A6 the report to the master happens once, and only when sent
+  PASS  A7 the watch ends at 02:20 and says so
+  PASS  A8 you cannot talk to a man who is on another deck
+  PASS  A9 a number the player asserts is checked against the world's count
+  PASS  B1 a code-fenced reply is read as JSON
+  PASS  B2 an unknown action becomes 'speak'; a long reply is cut
+  PASS  B3 hindsight is flagged, and ice is not hindsight
+  PASS  B4 Stone cannot send you down before there is anything to report
+  PASS  B5 after three rockets his 'send down' happens, and is marked as a divergence
+  PASS  C1 with no key and no recording, the character refuses to answer
+  PASS  C2 WEEK8_MODE=deepseek without a key is an error, not a fallback
+  PASS  D1 every fact's quotation is on disk, and the locator agrees
+  PASS  E1 the court's finding is not in the character's prompt
+  PASS  E2 only facts marked for him are sent, each with a locator
+  PASS  F1 the receipt is arithmetic, not a guess
+  PASS  G1 one HTTP round trip: state, action, refusal, ending
+
+21 passed, 0 failed
+```
+
+其中 E1 与 B3 是「被 bug 逼出来的检查」：E1 第一次失败，是因为我把「你从没听说过泰坦尼克号」
+写进了提示词（见 `difficulties.md` 第 2 条）；B3 是为了保证 `ice` 不被误判成未来词。
+
+## 3. 真调用跑一局
+
+```
+python code/run_demo.py
+```
+
+15 步里 11 个是动作（其余是三次「等到第 5 枚」「等到第 8 枚」「等到被叫下去」，
+以及最后那次世界已经结束、没走成的等待），共 4 次模型调用，02:20 结束。关键片段（全文见
+[`demo-transcript.md`](demo-transcript.md)）：
+
+```
+[01:05] 你:     That is five rockets now, sir. Shall I call the captain?
+[01:05] Stone: Five, you say. I make it five myself. No — hold off. ...
+[01:10] 世界:  传声筒的盖子掀开……「Are they company's signals?」……「Go on Morsing.」
+[02:00] Stone: Go down to the master. Wake him. Tell him altogether we have seen eight ...
+[02:08] 船长:  Were they all white? Any colour in them at all? / What is the time?
+[02:20] 世界:  两点二十分。你什么也不知道。
+```
+
+- hindsight 标记：0 次
+- JSON 修复重试：0 次
+- 回答超长被截断：0 次
+- 世界里被拒绝：0 次
+
+## 4. 费用
+
+见 [`cost.md`](cost.md)：4 次调用，输入 6,396 tok / 输出 426 tok / **$0.000669**。
+费用不是估的：`usage` 里的 `prompt_cache_hit_tokens` 与 `prompt_cache_miss_tokens` 分别
+按官方价目表计价（`sim/model.py` 的 `PRICES`），F1 用手算结果验过这条公式。
+
+## 5. 页面
+
+- `GET /api/state`、`POST /api/act`、`POST /api/reset`、`GET /api/ending` 都跑过（fixture 模式）。
+- 用 HTTP 按页面会走的顺序走了一遍：看灯 → 说 → 莫尔斯 → 等 → 说 → 写 → 等 → 说 → 写 → 等
+  → 进海图室 → 报告 → 回桥楼 → 说 → 等；`/api/ending` 返回的 `scrap`、`fair`、`lost`、
+  `facts` 都对。
+- **没有做**：浏览器里的渲染检查（这台机器的沙箱起不来浏览器）。所以「页面好不好看、有没有
+  JS 报错」这一条**没有验证**，不装作验证过。这一条写进了 `README.md` 的「诚实的边界」。
+
+## 6. 没验证的事（明确列出）
+
+1. 页面在浏览器里的实际渲染与交互（只验证了 HTTP 层）。
+2. 课堂投影下的可读性。
+3. Stone 的回答是否**稳定**地像 1912 年的人——只跑了 4 次。
+4. `fair log` 那条推断规则是否符合当时的商船惯例（我只按报告里「大副抄写」一句推的）。

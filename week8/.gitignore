@@ -1,0 +1,17 @@
+# secrets / local env
+.env
+*.key
+
+# python
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+desktop.ini
+
+# 自检时写到临时目录的日志（真跑的日志 research/calls.jsonl 要提交）
+research/_check_calls.jsonl
+
+# 大的生成物（这一周没有，留个位置）
+artifacts/
