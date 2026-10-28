@@ -29,6 +29,9 @@ OUT.mkdir(parents=True, exist_ok=True)
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 QUICK = "--quick" in ARGS
 WANT_GLB = "--glb" in ARGS
+HI = "--hi" in ARGS
+ONLY = [ARGS[ARGS.index("--only") + 1]] if "--only" in ARGS else []
+NO_STILLS = "--no-stills" in ARGS
 
 DECK_FRONT = 2.3        # forward edge of the bridge deck
 CHART_DOOR_X = -6.9
@@ -326,14 +329,14 @@ def build_ship():
         mat=M["black"], verts=24)
 
     # ---- people
-    officer("stone", (-1.55, -2.90, 0.0), facing=math.radians(205))
-    seated_master("master", (-8.05, 0.60, 0.0))
+    officer("stone", (1.72, -2.96, 0.0), facing=math.radians(-96))
+    seated_master("master", (-8.10, 0.82, 0.0))
     sphere("binnacle flame", 0.05, (0.55, 0.35, 0.95), mat=M["lamp"], seg=12, rings=8)
     draw_rigging()
     draw_winch()
 
     # ---- chart room interior
-    box("chart table", (1.70, 1.00, 0.09), (-7.15, 0.75, 0.88), mat=M["deck"])
+    box("chart table", (1.55, 0.95, 0.09), (-7.05, 0.82, 0.88), mat=M["deck"])
     for dx in (-0.75, 0.75):
         for dy in (-0.40, 0.40):
             box("table leg %.2f %.2f" % (dx, dy), (0.07, 0.07, 0.84),
@@ -388,16 +391,31 @@ def officer(name, loc, facing=0.0):
 
 
 def seated_master(name, loc):
+    """Seated in the chair, leaning back, cap still on: 1.35 m to the crown."""
     x, y, z = loc
-    box(name + "_chair seat", (0.52, 0.52, 0.10), (x - 0.30, y, z + 0.46),
+    box(name + "_chair seat", (0.52, 0.54, 0.09), (x - 0.28, y, z + 0.44),
         mat=M["deck_edge"])
-    box(name + "_chair back", (0.10, 0.52, 0.58), (x - 0.55, y, z + 0.95),
+    box(name + "_chair back", (0.09, 0.54, 0.62), (x - 0.52, y, z + 0.86),
         mat=M["deck_edge"])
-    body = cyl(name + "_body", 0.23, 0.70, (x, y, z + 0.85), mat=M["uniform"], verts=14)
-    body.scale = (1.0, 0.72, 1.0)
-    cyl(name + "_legs", 0.18, 0.45, (x + 0.05, y, z + 0.32), mat=M["uniform"], verts=12)
-    sphere(name + "_head", 0.115, (x, y, z + 1.32), mat=M["skin"])
-    cyl(name + "_cap", 0.135, 0.09, (x, y, z + 1.43), mat=M["uniform"], verts=14)
+    for side in (1, -1):
+        box("%s_chair arm%d" % (name, side), (0.42, 0.06, 0.05),
+            (x - 0.28, y + side * 0.26, z + 0.66), mat=M["deck_edge"])
+    cyl(name + "_thighs", 0.16, 0.42, (x + 0.02, y, z + 0.52), mat=M["uniform"], verts=12)
+    box(name + "_thighs box", (0.34, 0.34, 0.16), (x + 0.10, y, z + 0.52),
+        mat=M["uniform"])
+    torso = cyl(name + "_torso", 0.18, 0.52, (x - 0.06, y, z + 0.95),
+                mat=M["uniform"], verts=14)
+    torso.scale = (1.0, 0.72, 1.0)
+    box(name + "_shoulders", (0.10, 0.36, 0.24), (x - 0.10, y, z + 1.16),
+        mat=M["uniform"])
+    cyl(name + "_neck", 0.055, 0.08, (x - 0.06, y, z + 1.24), mat=M["skin"], verts=8)
+    sphere(name + "_head", 0.105, (x - 0.04, y, z + 1.31), mat=M["skin"], seg=16,
+           rings=10)
+    cyl(name + "_cap", 0.115, 0.07, (x - 0.04, y, z + 1.40), mat=M["uniform"], verts=14)
+    box(name + "_peak", (0.13, 0.05, 0.018), (x + 0.06, y, z + 1.37),
+        rot=(0, 0, 0), mat=M["black"])
+    sphere(name + "_hand", 0.05, (x + 0.16, y - 0.20, z + 0.72), mat=M["skin"],
+           seg=10, rings=8)
 
 
 def rod_between(name, a, b, radius=0.015, mat=None):
@@ -447,9 +465,9 @@ def build_night():
         x = math.cos(ang) * r
         y = math.sin(ang) * r
         near = r < 90
-        w = random.uniform(9, 26) if near else random.uniform(16, 46)
-        d = random.uniform(6, 18) if near else random.uniform(10, 30)
-        h = random.uniform(0.7, 2.4) if near else random.uniform(0.4, 1.3)
+        w = random.uniform(5, 14) if near else random.uniform(12, 34)
+        d = random.uniform(4, 11) if near else random.uniform(8, 24)
+        h = random.uniform(0.4, 1.1) if near else random.uniform(0.3, 0.9)
         box("floe%03d" % i, (w, d, h), (x, y, -10.75 + h / 2),
             rot=(random.uniform(-0.03, 0.03), random.uniform(-0.03, 0.03),
                  ang + random.uniform(-0.5, 0.5)),
@@ -553,15 +571,15 @@ def build_moon_and_lamps():
 
 NODES = {
     "bridge": {
-        "loc": (0.55, -2.50, 1.66),
-        "look_at": (-1.10, -10.5, 0.35),
+        "loc": (-0.55, -2.50, 1.66),
+        "look_at": (-2.20, -10.5, 0.35),
         "hotspots": {
             "light": (0.0, -1500.0, -8.6),
             "morse": (1.75, -2.85, 1.20),
             "glasses": (1.15, -3.10, 0.76),
             "clock": (-4.72, 0.95, 1.86),
             "tube": (-4.45, 1.55, 1.30),
-            "stone": (-1.55, -2.90, 1.35),
+            "stone": (1.72, -2.96, 1.35),
             "log": (0.0, -2.62, 0.33),
             "ice": (60.0, -300.0, -10.7),
             "door": (-7.20, -2.10, 1.10),
@@ -578,11 +596,11 @@ NODES = {
         },
     },
     "chart_room": {
-        "loc": (-6.05, -1.05, 1.56),
-        "look_at": (-7.95, 0.75, 1.00),
+        "loc": (-5.80, -1.05, 1.60),
+        "look_at": (-8.00, 0.80, 1.10),
         "hotspots": {
-            "master": (-8.25, 0.95, 1.25),
-            "chart": (-7.4, 0.95, 0.95),
+            "master": (-8.10, 0.82, 1.28),
+            "chart": (-7.05, 0.82, 0.95),
             "clock": (-8.52, 1.55, 1.62),
             "door": (-7.05, -2.20, 1.05),
         },
@@ -651,7 +669,7 @@ def render_pano(name, node):
     scene = bpy.context.scene
     scene.camera = bpy.data.objects["cam_" + name]
     scene.view_settings.exposure = EXPOSURE.get(name, 1.4)
-    scene.render.resolution_x = 1536 if QUICK else 3072
+    scene.render.resolution_x = 1536 if QUICK else (6144 if HI else 3072)
     scene.render.resolution_y = scene.render.resolution_x // 2
     path = OUT / ("pano_%s.jpg" % name)
     scene.render.filepath = str(path)
@@ -701,8 +719,10 @@ def main():
     print("HOTSPOTS written")
 
     for name in NODES:
+        if ONLY and name not in ONLY:
+            continue
         render_pano(name, NODES[name])
-    if not QUICK:
+    if not QUICK and not NO_STILLS:
         for name, spec in STILLS.items():
             render_still(name, spec)
 

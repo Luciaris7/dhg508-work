@@ -147,3 +147,24 @@ GET /scene/pano_bridge.jpg → 3072×1536 JPEG
 3. Stone 的回答是否稳定地像 1912 年的人——只跑了 4 次。
 4. `fair log` 那条推断规则是否符合当时的商船惯例。
 5. `.glb` 能不能在 Unity/Godot 里正常导入（没装 Unity）。
+
+## 10. 浏览器里的验证（补上了）
+
+沙箱的策略改过之后，headless Edge 可以用了（需要 `--user-data-dir` 指一个临时目录）。
+于是网页这一层终于真的被看过：
+
+```
+msedge --headless=new --disable-gpu --no-sandbox --user-data-dir=%TEMP%\es \
+  --window-size=1600,1000 --virtual-time-budget=9000 \
+  --screenshot=shots\01-opening.png http://127.0.0.1:8765/
+```
+
+- 三张截图：`shots/01-opening.jpg`（00:15 开场）、`02-talking.jpg`（跟二副说话，真调用）、
+  `03-chart-room.jpg`（02:11，被叫下去之后）。
+- 截图当场暴露的四个 bug（开场正对冰区、冰排过大、二副在实心船舱里、空值班簿编号）都已修好，
+  见 `difficulties.md` 第 11 条。
+- 还验证了：热点标签落在物体上（「那盏灯」「冰」「船长」「海图」「钟」），
+  远处那盏灯的光点由网页实时画在正确方位，`现场` 卡片会把世界的事件按时间排出来，
+  「向船长报告」按钮只在海图室里、且被叫下去之后才出现。
+
+**仍然没验的**：拖动手感、转动时热点跟随是否跟手、窗口尺寸变化后的重排、触屏。

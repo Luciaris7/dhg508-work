@@ -9,7 +9,9 @@
 全景里没有的那两样东西——远处那条船的桅灯、一枚枚升起的白色火箭——是网页实时画上去的，
 按模拟的钟点出现。
 
-![桥楼，右舷翼，00:15](scene/renders/still_exterior.jpg)
+![00:15，桥楼右舷翼，二副在左手边，那盏灯在右前方](shots/01-opening.jpg)
+
+*这是浏览器里的样子，不是渲染图：Blender 的全景当背景，网页在上面摆标签、画那盏灯和火箭。*
 
 ## 情境（三句话）
 
@@ -84,7 +86,8 @@ python data\verify_kb.py       # 38 条事实，逐一核对引文在原文里�
 | 远处的来船 | 一盏闪动的桅灯、一枚枚升起的白色火箭 | 网页**实时**画出（不是渲染进全景）；位置由 `hotspots.json` 的方位角决定 |
 
 三张全景：`scene/renders/pano_bridge.jpg`、`pano_foredeck.jpg`、`pano_chart_room.jpg`（3072×1536，各 150–300 KB）。
-两张剧照：`still_exterior.jpg`、`still_chart_room.jpg`。模型：`bridge.blend`（可重建）、`bridge.glb`（745 KB）。
+两张剧照：`still_exterior.jpg`、`still_chart_room.jpg`。模型：`bridge.blend`（可重建）、`bridge.glb`（850 KB）。
+浏览器里截的三张在 [`shots/`](shots/)：开场、跟二副说话、海图室。桥楼那张全景是 6144×1536，其余两张 3072×1536。
 
 ## 这一局里有什么
 
@@ -139,7 +142,7 @@ week8/
 │   └── processed/tip-day7-extracts.txt   逐字摘录的 Day 7 证词
 ├── research/                     why-not-a-film / sources / parts-table / tools-and-ai /
 │                                 difficulties / verification / cost / calls.jsonl / demo-transcript
-└── shots/                        浏览器截图——见「诚实的边界」
+└── shots/                        浏览器截图：开场 / 说话 / 海图室（1600×1000）
 ```
 
 ## 四个部件怎么拼起来
@@ -197,9 +200,9 @@ Blender 由 `scene/build_bridge.py` 无界面驱动（`--background --python`）
 
 ## 诚实的边界
 
-- **浏览器截图还没有**：这台机器起不来 headless 浏览器（命名管道被挡），所以 `shots/` 是空的。
-  Blender 的剧照在 `scene/renders/`，网页渲染只在 Node 里做过语法检查、用 HTTP 走过同一串接口。
-  页面本身要在你的浏览器里打开才算验证过——这正是需要你帮忙看一眼的地方。
+- **截图有了，交互没全验**：`shots/` 里的三张是真浏览器截的（headless Edge），它们暴露出四个问题并已修好
+  （开场正对冰区、冰排大得像房子、二副站在实心船舱里、空值班簿显示成「1.」）。但拖动手感、
+  热点在转动中的跟随、手机上的布局，仍然只在我这一台机器的 1600×1000 下看过。
 - **不是 Unity**：这台机器上没有 Unity（装不了、要登录），所以场景用 Blender + 一个网页前端。
   老师列的三种里，Blender 与「网页（原生 JS）」都算，Unity 只是「最容易让人走一圈」的那条路；
   这里用全景 + 热点代替了走路，代价与收益写在 `research/why-not-a-film.md` 第 3 节。
