@@ -150,6 +150,7 @@ const SUGGESTIONS = [
 
 let S = null;
 let transcript = [];
+let endingClosed = false;
 
 async function api(path, body) {
   const options = body ? {method:"POST", headers:{"Content-Type":"application/json"},
@@ -241,7 +242,8 @@ async function send(action){
   const {status, data} = await api("/api/act", action);
   if (data.state) S = data.state;
   if (status === 409) {
-    $("refusal").textContent = "世界没有允许：" + (data.message || "");
+    $("refusal").textContent = (data.fixture_miss ? "离线模式：" : "世界没有允许：")
+      + (data.message || "");
     render(); return;
   }
   if (status !== 200) {
@@ -276,8 +278,8 @@ document.addEventListener("click", (event) => {
   }
   if (target.id === "reportbtn") return send({action:"report"});
   if (target.id === "reset") return resetGame();
-  if (target.id === "again") { $("ending").style.display = "none"; return resetGame(); }
-  if (target.id === "close") { $("ending").style.display = "none"; return; }
+  if (target.id === "again") { $("ending").style.display = "none"; endingClosed = false; return resetGame(); }
+  if (target.id === "close") { $("ending").style.display = "none"; endingClosed = true; return; }
 });
 
 document.addEventListener("keydown", (event) => {
@@ -290,10 +292,12 @@ async function resetGame(){
   S = data.state;
   transcript = (S.events || []).slice();
   $("ending").style.display = "none";
+  endingClosed = false;
   renderScene(); render();
 }
 
 async function showEnding(){
+  if (endingClosed) return;
   const {data} = await api("/api/ending");
   const facts = data.facts || {};
   const quote = (key, label) => {
