@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Californian · 桥楼 · 00:15–02:20</title>
+<style>
+  :root{
+    --ink:#e9e4d8; --dim:#9aa3a5; --brass:#c8a45c; --red:#d9736a; --green:#79b8a0;
+    --blue:#7fa8c9; --panel:rgba(10,17,20,.86); --line:rgba(200,164,92,.28);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#04070a;color:var(--ink);
+    font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;font-size:15px}
+  #view{position:fixed;inset:0;overflow:hidden;cursor:grab;background:#04070a}
+  #view.dragging{cursor:grabbing}
+  #pano-layer{position:absolute;top:0;left:0;will-change:transform}
+  #pano{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  .vignette{position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.55) 100%)}
+  /* hotspots */
+  .hot{position:absolute;transform:translate(-50%,-50%);padding:4px 9px;border-radius:14px;
+    border:1px solid var(--line);background:rgba(10,17,20,.55);color:#e9e4d8;font-size:12px;
+    letter-spacing:.04em;cursor:pointer;white-space:nowrap;backdrop-filter:blur(2px);
+    transition:opacity .2s, background .2s}
+  .hot:hover{background:rgba(40,55,50,.85);border-color:var(--brass);color:#fff3d6}
+  .hot.walk{border-color:rgba(121,184,160,.6);color:#d8f0e6}
+  .hot.hidden{opacity:0;pointer-events:none}
+  .hot .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--brass);
+    margin-right:6px;vertical-align:middle}
+  /* the other steamer's light, drawn live over the rendered sky */
+  #shiplight{position:absolute;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);
+    background:#ffeec2;box-shadow:0 0 10px 4px rgba(255,230,170,.55),0 0 36px 12px rgba(255,210,140,.18);
+    animation:flicker 3.4s infinite}
+  #shiplight.hidden{display:none}
+  @keyframes flicker{0%,100%{opacity:.85}8%{opacity:.3}12%{opacity:.9}16%{opacity:.45}40%{opacity:.9}
+    70%{opacity:.6}80%{opacity:.95}}
+  .rocket{position:absolute;width:6px;height:6px;border-radius:50%;transform:translate(-50%,-50%);
+    background:#fff8e6;box-shadow:0 0 14px 6px rgba(255,245,220,.75),0 0 60px 24px rgba(255,235,200,.22);
+    transition:top 1.5s ease-out, opacity 1.5s ease-out}
+  /* HUD */
+  header{position:fixed;top:0;left:0;right:0;display:flex;align-items:baseline;gap:16px;
+    padding:12px 20px;background:linear-gradient(180deg,rgba(4,7,10,.85),transparent);pointer-events:none}
+  header h1{font-size:15px;letter-spacing:.14em;color:var(--brass);margin:0;font-weight:600}
+  header .clock{font-family:Consolas,monospace;font-size:24px;letter-spacing:.08em}
+  header .where{color:var(--dim);font-size:13px}
+  header .badge{margin-left:auto;font-size:12px;padding:3px 9px;border:1px solid var(--line);
+    border-radius:999px;color:var(--dim);pointer-events:auto}
+  header .badge.live{color:var(--green);border-color:#2c4f45}
+  header .badge.rec{color:var(--brass);border-color:#4a3d22}
+  #panel{position:fixed;top:58px;right:16px;width:352px;max-height:calc(100vh - 96px);
+    display:flex;flex-direction:column;gap:10px;overflow-y:auto;pointer-events:none}
+  .card{pointer-events:auto;background:var(--panel);border:1px solid rgba(200,164,92,.18);
+    border-radius:8px;padding:11px 13px;backdrop-filter:blur(3px)}
+  .card h2{font-size:11px;letter-spacing:.12em;color:var(--dim);margin:0 0 7px;font-weight:600;
+    text-transform:uppercase}
+  #stone .say{font-family:Georgia,serif;font-size:16px;line-height:1.5;color:#f3eee2}
+  #stone .zh{color:var(--dim);font-size:12.5px;margin-top:4px}
+  #stone .why{color:#7d8a8d;font-size:11.5px;margin-top:6px}
+  #stone .warn{color:var(--red);font-size:11.5px;margin-top:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  button{font:inherit;font-size:12.5px;padding:4px 9px;border-radius:4px;cursor:pointer;
+    border:1px solid rgba(200,164,92,.25);background:rgba(20,34,40,.9);color:var(--ink)}
+  button:hover{border-color:var(--brass);color:#fff3d6}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  input[type=text]{width:100%;font:inherit;font-size:13px;padding:6px 8px;border-radius:4px;
+    border:1px solid rgba(200,164,92,.25);background:rgba(4,9,11,.9);color:var(--ink)}
+  input[type=text]:focus{outline:none;border-color:var(--brass)}
+  #log ol{margin:0;padding-left:18px;font-size:12px;color:#d9d2c2}
+  #log li{margin-bottom:2px}
+  #log .x{opacity:.5;margin-left:5px;padding:0 4px;font-size:10px}
+  footer{position:fixed;left:0;right:0;bottom:0;padding:7px 18px;font-size:11.5px;color:var(--dim);
+    display:flex;gap:16px;align-items:center;background:linear-gradient(0deg,rgba(4,7,10,.9),transparent);
+    pointer-events:none}
+  footer span,footer button{pointer-events:auto}
+  #compass{font-family:Consolas,monospace;letter-spacing:.2em;color:var(--brass)}
+  #toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);max-width:70vw;
+    background:rgba(10,17,20,.92);border:1px solid var(--line);border-radius:6px;padding:8px 14px;
+    font-size:13px;color:#f0e9d9;opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.on{opacity:1}
+  #loading{position:fixed;inset:0;display:grid;place-items:center;background:#04070a;
+    color:var(--dim);font-size:14px;z-index:20;text-align:center;line-height:1.8}
+  #ending{position:fixed;inset:0;background:rgba(4,7,10,.96);overflow-y:auto;padding:30px 7vw;
+    z-index:30;display:none}
+  #ending h2{font-size:17px;color:var(--brass);margin-top:26px}
+  #ending .q{font-family:Georgia,serif;color:#f0e9d9;margin:0 0 4px}
+  #ending .src{color:var(--dim);font-size:11.5px}
+  #ending .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  #ending .card2{border:1px solid rgba(200,164,92,.2);border-radius:6px;padding:11px 13px;
+    background:rgba(13,22,26,.9)}
+  #ending .big{font-family:Georgia,serif;font-size:17px;line-height:1.55}
+  @media (max-width:900px){#panel{left:8px;right:8px;width:auto;top:auto;bottom:44px;max-height:52vh}}
+</style>
+</head>
+<body>
+<div id="loading">正在装桥楼……<br><span style="font-size:12px">（Blender 渲染的三张全景：桥楼、前甲板、海图室）</span></div>
+<div id="view"><div id="pano-layer"><img id="pano" alt="the bridge of the Californian at night"></div>
+  <div id="shiplight" class="hidden"></div>
+</div>
+<div class="vignette"></div>
+
+<header>
+  <h1>CALIFORNIAN</h1>
+  <div class="clock" id="clock">00:15</div>
+  <div class="where" id="where">桥楼</div>
+  <div class="badge" id="mode">…</div>
+</header>
+
+<div id="panel">
+  <div class="card" id="stone">
+    <h2>Mr Stone · 二副 <span id="actsrc" style="color:#6d7b7e;font-size:10px"></span></h2>
+    <div class="say" id="stone-say">—</div>
+    <div class="zh" id="stone-zh"></div>
+    <div class="why" id="stone-why"></div>
+    <div class="warn" id="stone-warn"></div>
+  </div>
+
+  <div class="card" id="log">
+    <h2>值班簿 scrap log <span id="logcount" style="color:#6d7b7e;font-size:10px"></span></h2>
+    <ol id="loglines"></ol>
+    <div style="display:flex;gap:5px;margin-top:6px">
+      <input type="text" id="logtext" maxlength="160" placeholder="记一行（写什么，是你的选择）">
+      <button id="logbtn">写下</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>说话 / 动作</h2>
+    <div class="chips" id="suggest"></div>
+    <div style="display:flex;gap:5px;margin-top:6px">
+      <input type="text" id="saytext" placeholder="对 Stone 说一句英文（页面假设你说出了口）">
+      <button id="saybtn">说</button>
+    </div>
+    <div class="chips" style="margin-top:6px">
+      <button data-act="morse">用莫尔斯灯呼叫</button>
+      <button data-act="wait">等一会儿</button>
+      <button id="reportbtn" style="display:none">向船长报告</button>
+    </div>
+    <div style="color:#6d7b7e;font-size:11px;margin-top:6px" id="hint">
+      在画面里拖动／按 ← → 转身；点亮着的标签就是「看它」；走到虚线标签是「换个地方」。
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span id="compass">N</span>
+  <span id="footmode"></span>
+  <span id="spend"></span>
+  <span id="turns"></span>
+  <span style="margin-left:auto">
+    <button id="textlink">文字版</button>
+    <button id="reset">重来</button>
+  </span>
+</footer>
+
+<div id="toast"></div>
+<div id="ending"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const PLACE_LABEL = {bridge:"桥楼 · the bridge", foredeck:"前甲板 · the foredeck",
+                     chart_room:"海图室 · the chart room"};
+const HOT = {
+  light:  {label:"那盏灯",     act:{action:"look", target:"light"}},
+  morse:  {label:"莫尔斯灯",   act:{action:"look", target:"morse"}},
+  glasses:{label:"望远镜",     act:{action:"look", target:"glasses"}},
+  clock:  {label:"钟",         act:{action:"look", target:"clock"}},
+  tube:   {label:"传声筒",     act:{action:"look", target:"tube"}},
+  stone:  {label:"二副 Stone", act:{action:"look", target:"stone"}},
+  log:    {label:"值班簿",     act:{action:"look", target:"log"}},
+  ice:    {label:"冰",         act:{action:"look", target:"ice"}},
+  gear:   {label:"计程仪零件", act:{action:"look", target:"gear"}},
+  master: {label:"船长",       act:{action:"look", target:"master"}},
+  chart:  {label:"海图",       act:{action:"look", target:"chart"}},
+  door:   {label:"海图室的门", act:{action:"walk", to:"chart_room"}, walk:true},
+  ladder: {label:"上桥楼",     act:{action:"walk", to:"bridge"}, walk:true}
+};
+const SUGGESTIONS = [
+  "Her masthead light is flickering, sir. Might she be calling us up?",
+  "That is five rockets now, sir. Shall I call the captain?",
+  "Do you make her out to be a passenger steamer?",
+  "A ship does not fire rockets at sea for nothing, sir.",
+  "I will keep calling her up and watch her bearing."
+];
+
+let S = null;            // state from the API
+let SCENE = null;        // hotspots.json
+let node = "bridge";     // which panorama is showing
+let yaw = 0, pitch = 0;  // current view, degrees, relative to the render's forward
+let fov = 68;            // horizontal field of view, degrees
+let dragging = false, lastX = 0, lastY = 0, moved = 0;
+let lastRockets = 0;
+let transcript = [];
+
+// ---------------------------------------------------------------- geometry
+function panoSize(){
+  const img = $("pano");
+  const ppd = window.innerWidth / fov;          // pixels per degree
+  return {ppd, w: ppd * 360, h: ppd * 180,
+          vfov: (window.innerHeight / ppd)};
+}
+
+function applyView(){
+  const {ppd, w, h, vfov} = panoSize();
+  pitch = Math.max(-28, Math.min(28, pitch));
+  $("pano").style.width = w + "px";
+  const offX = (0.5 + (yaw - fov / 2) / 360) * w;
+  const offY = (0.5 - (pitch + vfov / 2) / 180) * h;
+  $("pano-layer").style.transform = `translate(${-offX}px, ${-offY}px)`;
+  layoutMarkers();
+  const dirs = ["N","NE","E","SE","S","SW","W","NW"];
+  const bearing = ((yaw + 360) % 360);
+  $("compass").textContent = "视角 " + Math.round(bearing) + "°";
+}
+
+function screenOf(yawDeg, pitchDeg){
+  const {ppd, w, h, vfov} = panoSize();
+  const x = (0.5 + yawDeg / 360) * w - (0.5 + (yaw - fov / 2) / 360) * w;
+  const y = (0.5 - pitchDeg / 180) * h - (0.5 - (pitch + vfov / 2) / 180) * h;
+  return {x, y, visible: x > -60 && x < window.innerWidth + 60};
+}
+
+function layoutMarkers(){
+  if (!SCENE) return;
+  const data = SCENE[node];
+  if (!data) return;
+  document.querySelectorAll(".hot").forEach((el) => {
+    const key = el.dataset.key;
+    const spot = data.hotspots[key];
+    if (!spot) { el.classList.add("hidden"); return; }
+    const p = screenOf(spot.yaw, spot.pitch);
+    el.style.left = p.x + "px";
+    el.style.top = p.y + "px";
+    el.classList.toggle("hidden", !p.visible);
+  });
+  const light = data.hotspots.light;
+  const lamp = $("shiplight");
+  if (light) {
+    const p = screenOf(light.yaw, light.pitch);
+    lamp.style.left = p.x + "px";
+    lamp.style.top = p.y + "px";
+    lamp.classList.toggle("hidden", !p.visible);
+  }
+}
+
+function buildHotspots(){
+  document.querySelectorAll(".hot").forEach((el) => el.remove());
+  const data = SCENE && SCENE[node];
+  if (!data) return;
+  Object.keys(data.hotspots).forEach((key) => {
+    const meta = HOT[key];
+    if (!meta) return;
+    const el = document.createElement("div");
+    el.className = "hot" + (meta.walk ? " walk" : "");
+    el.dataset.key = key;
+    el.innerHTML = `<span class="dot"></span>${meta.label}`;
+    el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (meta.walk) return goTo(meta.act.to);
+      act(meta.act);
+    });
+    $("view").appendChild(el);
+  });
+  layoutMarkers();
+}
+
+async function switchPano(place){
+  node = place;
+  const img = $("pano");
+  await new Promise((resolve) => {
+    img.onload = resolve; img.onerror = resolve;
+    img.src = `/scene/pano_${place}.jpg`;
+  });
+  yaw = 0; pitch = -2;
+  applyView();
+  buildHotspots();
+}
+
+// ---------------------------------------------------------------- controls
+$("view").addEventListener("pointerdown", (event) => {
+  if (event.target.closest(".hot")) return;
+  dragging = true; moved = 0; lastX = event.clientX; lastY = event.clientY;
+  $("view").classList.add("dragging");
+  $("view").setPointerCapture(event.pointerId);
+});
+$("view").addEventListener("pointermove", (event) => {
+  if (!dragging) return;
+  const dx = event.clientX - lastX, dy = event.clientY - lastY;
+  lastX = event.clientX; lastY = event.clientY;
+  moved += Math.abs(dx) + Math.abs(dy);
+  const {ppd} = panoSize();
+  yaw = yaw - dx / ppd;
+  if (yaw > 180) yaw -= 360;
+  if (yaw < -180) yaw += 360;
+  pitch = pitch + dy / ppd;
+  applyView();
+});
+$("view").addEventListener("pointerup", (event) => {
+  dragging = false;
+  $("view").classList.remove("dragging");
+});
+$("view").addEventListener("wheel", (event) => {
+  event.preventDefault();
+  fov = Math.max(38, Math.min(96, fov + (event.deltaY > 0 ? 4 : -4)));
+  applyView();
+}, {passive:false});
+document.addEventListener("keydown", (event) => {
+  const {ppd} = panoSize();
+  if (event.key === "ArrowLeft" || event.key === "a") { yaw -= 20 / ppd * 6; applyView(); }
+  if (event.key === "ArrowRight" || event.key === "d") { yaw += 20 / ppd * 6; applyView(); }
+  if (event.key === "ArrowUp" || event.key === "w") { pitch += 8; applyView(); }
+  if (event.key === "ArrowDown" || event.key === "s") { pitch -= 8; applyView(); }
+  if (event.key === "Enter" && event.target.id === "saytext") { $("saybtn").click(); }
+  if (event.key === "Enter" && event.target.id === "logtext") { $("logbtn").click(); }
+});
+window.addEventListener("resize", () => applyView());
+
+// ---------------------------------------------------------------- API
+async function api(path, body){
+  const options = body ? {method:"POST", headers:{"Content-Type":"application/json"},
+                          body:JSON.stringify(body)} : {};
+  const response = await fetch(path, options);
+  let data = {};
+  try { data = await response.json(); } catch (e) { data = {}; }
+  return {status: response.status, data};
+}
+
+function toast(message){
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("on");
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove("on"), 4200);
+}
+
+async function act(payload){
+  const {status, data} = await api("/api/act", payload);
+  if (status === 409) { toast((data.fixture_miss ? "离线模式：" : "世界没有允许：") + (data.message || "")); return; }
+  if (status !== 200) { toast("出错了：" + ((data.error && data.error.message) || status)); return; }
+  S = data.state;
+  renderHud();
+  if (S.place !== node) await switchPano(S.place);
+  if (data.events) data.events.forEach(pushEvent);
+  fireNewRockets();
+  if (S.ended) showEnding();
+}
+
+function pushEvent(event){
+  transcript.push(event);
+  if (event.kind === "stone" || event.kind === "master" || event.kind === "player") {
+    // the scene is the record; the panel keeps the last words only
+  }
+}
+
+async function goTo(place){
+  const {status, data} = await api("/api/act", {action:"walk", to:place});
+  if (status === 409) { toast("世界没有允许：" + (data.message || "")); return; }
+  if (status !== 200) { toast("出错了"); return; }
+  S = data.state;
+  renderHud();
+  await switchPano(S.place);
+  if (data.events) data.events.forEach(pushEvent);
+}
+
+// ---------------------------------------------------------------- rockets
+function fireNewRockets(){
+  if (!S) return;
+  const total = S.rockets || 0;
+  if (total <= lastRockets) { lastRockets = total; return; }
+  const data = SCENE && SCENE[node];
+  if (!data || !data.hotspots.light) { lastRockets = total; return; }
+  const base = data.hotspots.light;
+  for (let i = lastRockets + 1; i <= total; i++) {
+    const jitter = (Math.random() - 0.5) * 9;
+    const start = screenOf(base.yaw + jitter, base.pitch - 4);
+    const el = document.createElement("div");
+    el.className = "rocket";
+    el.style.left = start.x + "px";
+    el.style.top = (start.y + 40) + "px";
+    el.style.opacity = "0";
+    $("view").appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      el.style.top = (start.y - 70) + "px";
+    });
+    setTimeout(() => { el.style.opacity = "0"; }, 900);
+    setTimeout(() => el.remove(), 2400);
+  }
+  lastRockets = total;
+}
+
+// ---------------------------------------------------------------- HUD
+function renderHud(){
+  if (!S) return;
+  $("clock").textContent = S.clock;
+  $("where").textContent = PLACE_LABEL[S.place] || S.place;
+  const badge = $("mode");
+  if (S.mode === "deepseek") { badge.textContent = "真调用 · " + S.model; badge.className = "badge live"; }
+  else { badge.textContent = "录制重放（不是真调用）"; badge.className = "badge rec"; }
+
+  const st = S.stone || {};
+  $("stone-say").textContent = st.say || "—";
+  $("stone-zh").textContent = st.zh || "";
+  $("stone-why").textContent = st.why ? "他的理由（模型自述，不是史料）：" + st.why : "";
+  const warn = [];
+  if (st.flags && st.flags.includes("hindsight")) warn.push("模型说出了 1912 年不可能知道的事，已标出（不当作史实）。");
+  if (st.refusal) warn.push("世界没有让这件事发生：" + st.refusal);
+  $("stone-warn").textContent = warn.join(" ");
+  $("actsrc").textContent = st.source ? "（" + st.source + "）" : "";
+
+  $("logcount").textContent = (S.log || []).length + " / " + S.log_max;
+  $("loglines").innerHTML = (S.log || []).map((entry, index) =>
+    `<li>${entry.time} ${escapeHtml(entry.text)}<button class="x" data-cross="${index+1}">划掉</button></li>`
+  ).join("") || "<li style='color:#6d7b7e'>还没有一行。</li>";
+
+  $("suggest").innerHTML = SUGGESTIONS.map((line) =>
+    `<button data-suggest="${escapeAttr(line)}">${escapeHtml(shrink(line, 38))}</button>`).join("");
+  $("reportbtn").style.display =
+    (S.place === "chart_room" && S.sent_below && !S.reported_to_master) ? "" : "none";
+  $("saybtn").disabled = S.place !== "bridge" || S.ended;
+  $("logbtn").disabled = (S.log || []).length >= S.log_max || S.ended;
+
+  const spend = S.spend || {calls:0, usd:0, in:0, out:0};
+  $("footmode").textContent = S.mode === "deepseek" ? "模型 " + S.model : "无模型（重放）";
+  $("spend").textContent = `${spend.calls} 次调用 · ${spend.in}/${spend.out} tok · $${(spend.usd||0).toFixed(5)}`;
+  $("turns").textContent = `${S.turns} 个动作 · 被拒绝 ${S.refusals} 次`;
+}
+
+function shrink(text, n){ return text.length > n ? text.slice(0, n) + "…" : text; }
+function escapeHtml(text){ return String(text == null ? "" : text).replace(/[&<>"]/g,
+  (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function escapeAttr(text){ return escapeHtml(text).replace(/"/g, "&quot;"); }
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("button");
+  if (!target) return;
+  if (target.dataset.cross) return act({action:"cross", line:target.dataset.cross});
+  if (target.dataset.suggest) { $("saytext").value = target.dataset.suggest; $("saytext").focus(); return; }
+  if (target.dataset.act === "morse") return act({action:"morse", text:"Californian"});
+  if (target.dataset.act === "wait") return act({action:"wait"});
+  if (target.id === "saybtn") {
+    const text = $("saytext").value.trim();
+    if (!text) return;
+    $("saytext").value = "";
+    return act({action:"say", text});
+  }
+  if (target.id === "logbtn") {
+    const text = $("logtext").value.trim();
+    if (!text) return;
+    $("logtext").value = "";
+    return act({action:"write", text});
+  }
+  if (target.id === "reportbtn") return act({action:"report"});
+  if (target.id === "reset") return resetGame();
+  if (target.id === "textlink") { window.location.href = "/text"; return; }
+  if (target.id === "again") { $("ending").style.display = "none"; return resetGame(); }
+  if (target.id === "close") { $("ending").style.display = "none"; return; }
+});
+
+async function resetGame(){
+  const {data} = await api("/api/reset", {});
+  S = data.state; transcript = [];
+  lastRockets = 0;
+  $("ending").style.display = "none";
+  await switchPano(S.place);
+  renderHud();
+}
+
+// ---------------------------------------------------------------- ending
+async function showEnding(){
+  const {data} = await api("/api/ending");
+  const facts = data.facts || {};
+  const q = (key, label) => {
+    const fact = facts[key];
+    if (!fact) return "";
+    return `<div class="card2"><h3 style="font-size:13px;color:#e9e4d8;margin:0 0 4px">${label}</h3>
+      <p class="q">“${escapeHtml(fact.text)}”</p>
+      <div class="src">出处：${fact.source} · ${fact.locator}</div></div>`;
+  };
+  const scrap = (data.scrap || []).map((e) => `<li>${e.time} ${escapeHtml(e.text)}</li>`).join("");
+  const fair = (data.fair || []).map((e) => `<li>${e.time} ${escapeHtml(e.text)}</li>`).join("");
+  const lost = (data.lost || []).map((e) => `<li>${e.time} ${escapeHtml(e.text)}</li>`).join("");
+  $("ending").innerHTML = `
+    <div style="max-width:960px;margin:0 auto">
+      <h1 style="color:#c8a45c;font-size:21px;letter-spacing:.06em">02:20 — 值班结束</h1>
+      <p class="big">Titanic 在两点二十分沉没，离这里五到十英里。Californian 的桥楼上没有人知道。</p>
+      <h2>1 · 你的值班簿</h2>
+      <div class="card2"><ul>${scrap || "<li>空白的。</li>"}</ul></div>
+      <div class="grid">
+        <div class="card2"><h3 style="font-size:13px">抄进航海日志的（推断）</h3><ul>${fair || "<li>没有。</li>"}</ul></div>
+        <div class="card2"><h3 style="font-size:13px">没有抄进去的（推断）</h3><ul>${lost || "<li>没有。</li>"}</ul></div>
+      </div>
+      <h2>2 · 法庭听到的</h2>
+      <div class="grid">
+        ${q("stone.rockets.five","Stone 在 1.10 的报告")}
+        ${q("master.company","船长的回答")}
+        ${q("master.morsing","船长的指示")}
+        ${q("stone.send","Stone 叫学徒下去时说的话")}
+        ${q("master.205","船长在两点零五分问的")}
+        ${q("stone.queer","Stone 说过的话")}
+        ${q("stone.fornothing","Stone 承认可能说过的话")}
+        ${q("court.discrepancy","三份证词对不上")}
+      </div>
+      <h2>3 · 判决</h2>
+      <div class="grid">
+        ${q("court.rockets","那八枚是什么")}
+        ${q("court.number","数量")}
+        ${q("court.distance","距离")}
+        ${q("court.ice","能不能过去")}
+        ${q("court.saved","代价")}
+      </div>
+      <h2>4 · 同一批火箭，在另一条船上</h2>
+      <div class="grid">
+        ${q("beesley.rockets","从沉船上看见的")}
+        ${q("beesley.fishing","1912 年一个真实的反对理由")}
+      </div>
+      <h2>5 · 这一局</h2>
+      <p>你看见 ${data.seen_rockets} 枚火箭（船上共 ${data.rockets} 枚）；
+      你${data.reported ? "在两点零五分左右下去报告了船长" : "没有下去报告"}；
+      你写了 ${(data.scrap||[]).length} 行；一共 ${data.turns} 个动作。</p>
+      ${data.divergence ? `<p class="src">这一局偏离记录的地方：${escapeHtml(data.divergence)}</p>` : ""}
+      <h2>6 · 这一小时教了什么</h2>
+      <p class="big">电影让你同时看见两边，所以「他应该过去」是廉价的。在这里，你只有桥楼上一个人
+      能看到的东西：一盏桅灯、八枚白火箭、一句「继续用莫尔斯灯叫」、一个睡在海图室里的船长。</p>
+      <p class="big">而值班簿告诉你第二件事：记录是抄出来的。你写下的不一定被抄，
+      被抄的不一定被听见，被听见的三个人说法还互相矛盾。</p>
+      <p style="margin-top:22px"><button id="again">再走一次中班</button>
+      <button id="close">留在这张纸上</button></p>
+    </div>`;
+  $("ending").style.display = "block";
+}
+
+// ---------------------------------------------------------------- boot
+(async function start(){
+  const state = await api("/api/state");
+  const scene = await api("/api/scene");
+  if (state.status !== 200 || !scene.data) {
+    $("loading").innerHTML = "拿不到场景数据。<br>看控制台的报错，或改用 <b>/text</b> 文字版。";
+    return;
+  }
+  S = state.data;
+  SCENE = scene.data;
+  lastRockets = S.rockets || 0;
+  await switchPano(S.place);
+  renderHud();
+  $("loading").style.display = "none";
+  if (S.ended) showEnding();
+})();
+</script>
+</body>
+</html>

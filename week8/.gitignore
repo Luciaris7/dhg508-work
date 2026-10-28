@@ -15,3 +15,5 @@ research/_check_calls.jsonl
 
 # 大的生成物（这一周没有，留个位置）
 artifacts/
+# Blender 的备份文件
+*.blend1

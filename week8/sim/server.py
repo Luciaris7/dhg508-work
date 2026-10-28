@@ -1,19 +1,27 @@
-"""A page, a small Python server, and one character who decides for himself.
+"""A scene, a small Python server, and one character who decides for himself.
 
     cd week8
     python sim/server.py                 then open http://127.0.0.1:8765
     WEEK8_PORT=9000 python sim/server.py
-    WEEK8_MODE=fixture python sim/server.py    replay a recorded session, labelled
+    WEEK8_MODE=fixture python sim/server.py   replay a recorded session, labelled
+
+The page at / is the 3D scene: three 360-degree panoramas rendered in Blender
+(scene/build_bridge.py), with the instruments and the light clickable.  One
+thing the panoramas cannot do, the page draws live: the other steamer's lamp,
+and the rockets going up.  /text is the same simulation as plain text.
 
 Standard library only; nothing to install.  The server binds 127.0.0.1 only.
 
 Routes
-    GET  /                the page
+    GET  /                the 3D scene
+    GET  /text            the text version of the same watch
     GET  /api/state       the whole visible state (clock, place, log, Stone)
+    GET  /api/scene       hotspot angles for each panorama
     POST /api/act         {"action": "look", "target": "light"} -> events
     POST /api/reset       start the watch again
     GET  /api/ending      what the court had, and what the scrap log had
     GET  /api/health      mode, key present, calls so far
+    GET  /scene/<file>    the rendered panoramas and stills
 """
 
 import json
@@ -35,6 +43,12 @@ PORT = int(os.environ.get("WEEK8_PORT") or os.environ.get("PORT") or "8765")
 MAX_BODY = 8 * 1024
 GAME = world.Game(kb=stone.load_kb())
 MODE = (os.environ.get("WEEK8_MODE") or "auto").lower()
+SCENE_DIR = HERE.parent / "scene" / "renders"
+SCENE_FILES = {"hotspots.json": "application/json; charset=utf-8"}
+for _place in ("bridge", "foredeck", "chart_room"):
+    SCENE_FILES["pano_%s.jpg" % _place] = "image/jpeg"
+for _still in ("exterior", "chart_room"):
+    SCENE_FILES["still_%s.jpg" % _still] = "image/jpeg"
 
 
 def mode_name():
@@ -74,11 +88,30 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?", 1)[0]
         try:
-            if path in ("/", "/index.html"):
+            if path in ("/", "/scene", "/scene/index.html"):
+                return self.send(200, (HERE / "static" / "scene.html").read_bytes(),
+                                 "text/html; charset=utf-8")
+            if path in ("/text", "/text/", "/index.html"):
                 return self.send(200, (HERE / "static" / "index.html").read_bytes(),
                                  "text/html; charset=utf-8")
             if path == "/api/state":
                 return self.send_json(200, state())
+            if path == "/api/scene":
+                hotspots = SCENE_DIR / "hotspots.json"
+                if not hotspots.is_file():
+                    return self.fail(503, "scene",
+                                     "还没有渲染：先跑 scene/build_bridge.py",
+                                     "blender --background --factory-startup "
+                                     "--python scene/build_bridge.py")
+                return self.send(200, hotspots.read_bytes(),
+                                 "application/json; charset=utf-8")
+            if path.startswith("/scene/"):
+                name = path.rsplit("/", 1)[-1]
+                kind = SCENE_FILES.get(name)
+                target = SCENE_DIR / name
+                if kind is None or not target.is_file():
+                    return self.fail(404, "not_found", "no such scene file: %s" % name)
+                return self.send(200, target.read_bytes(), kind)
             if path == "/api/ending":
                 return self.send_json(200, GAME.ending())
             if path == "/api/health":

@@ -109,3 +109,41 @@ python code/run_demo.py
 2. 课堂投影下的可读性。
 3. Stone 的回答是否**稳定**地像 1912 年的人——只跑了 4 次。
 4. `fair log` 那条推断规则是否符合当时的商船惯例（我只按报告里「大副抄写」一句推的）。
+
+## 7. 场景（Blender）
+
+```
+blender --background --factory-startup --python scene/build_bridge.py -- --glb
+```
+
+- 引擎：Cycles，OptiX GPU（`NVIDIA GeForce RTX 5070 Laptop GPU`）。
+- 分辨率：全景 3072×1536（JPEG，150–300 KB），剧照 1760×990（PNG）。
+- 采样：160，自适应 + 降噪（OIDN）。
+- 用时：整套约 5 分半（三张全景 + 两张剧照 + `.blend` + `.glb`）。
+- 输出：`scene/renders/` 下 9 个文件，`hotspots.json` 在每个渲染前写好。
+
+逐张看过：桥楼（冰区、栏杆、莫尔斯灯、轮船舱、值班簿、二副）、前甲板（桅、支索、绞车、冰）、
+海图室（海图桌、油灯、舷窗、门、船长）。**第一轮二副不在画面里**（站在实心船舱内），
+**海图室第一轮是一间空房**（船长的位置与桌子重叠、房间是实心方块），改过之后重渲。见 `difficulties.md`。
+
+## 8. 网页场景层
+
+```
+GET /                 → scene.html（3D 场景）
+GET /text             → index.html（文字版）
+GET /api/scene        → hotspots.json
+GET /scene/pano_bridge.jpg → 3072×1536 JPEG
+```
+
+- `node -e "new Function(script)"`：语法通过，391 行。
+- HTML 里的 id 与 JS 里 `$("…")` 引用逐个比对：无缺失。
+- HTTP 逐条取过：`/api/state`、`/api/scene`、`/scene/pano_*.jpg`、`/api/act`（含 409 拒绝）、`/text`。
+- **没做到**：真浏览器里看它。见 `difficulties.md` 第 9 条。
+
+## 9. 没验证的事（更新）
+
+1. 场景页在浏览器里的实际渲染、拖动、热点位置（只验证了数据与语法）。
+2. 全景在 60° 视野下的清晰度（3072 宽 → 每度约 8.5 px）。
+3. Stone 的回答是否稳定地像 1912 年的人——只跑了 4 次。
+4. `fair log` 那条推断规则是否符合当时的商船惯例。
+5. `.glb` 能不能在 Unity/Godot 里正常导入（没装 Unity）。

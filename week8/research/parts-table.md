@@ -63,3 +63,25 @@
 - 没有让模型决定「船开不开」或「船长醒不醒」。那些是 `world.py` 的 if。
 - 没有给「八枚火箭」之外的细节编数字：距离（5 英里）与「8–10 英里」的争议原样保留，
   法庭的话与船长的说法分开标注。
+
+## 五、Blender 场景
+
+场景不是「配图」，它是这一局的地方。所以它也要分档。
+
+| 部件 | 等级 | 依据 / 做法 | 出处 |
+|---|---|---|---|
+| 桥楼是一座开放的平台：前有舷墙与挡风布，两侧是翼台，后面是船舱/轮船舱 | evidenced | 报告与证词反复提到「bridge」「bridge wing」「wheelhouse」「chart room」「the chart-room door」；当时的商船都是这个布置 | L3410、L3426、Q7565、Q7554 |
+| 轮船舱（wheelhouse）在桥楼后部、带一排窗 | inferred | 证词只说「wheelhouse clock」，没说它长什么样；一排窗与木/铁壳按同时代船只的照片布置 | Q7565 |
+| 海图室在轮船舱后面，门朝右舷，里面一张海图桌 | evidenced（存在）+ inferred（位置与陈设） | 「went down to the chart room and told the master」「the chart-room door」（门在关着） | L3471–3473、Q7554 |
+| 莫尔斯灯在桥楼顶部、有灯罩与键盘 | evidenced | 「the keyboard…on top of the bridge」「Morse lamp」 | Q7448、L3468 |
+| 罗经柜（binnacle）在桥楼中间 | inferred | 证词提到罗经方位（「S.S.E. by the standard compass」），但没说柜子在哪；按惯例放在桥楼中线 | Q7820 |
+| 传声筒在舱门旁 | evidenced（存在）+ inferred（位置） | 「speaking tube」「by voice pipe」 | Q7828、L3420 |
+| 双筒望远镜搁在舷墙的托架上 | evidenced（物件）+ inferred（位置） | 「with the glasses」「binoculars」 | Q7426、L7838 |
+| 值班簿与铅笔在桥楼上一只木箱上 | invented | 报告只说「scrap log」；把它放在玩家手边，是为了让「记一行」这个动作有地方落 | L3308 |
+| 船钟挂在舷墙上 | invented | 报告没提；加它是为了让观众一眼知道这是船 | — |
+| 冰区：近处碎冰、远处连片冰原 | evidenced（有冰）+ invented（形状与数量） | 报告：船「surrounded by ice」，冰区宽 2–3 英里 | L3245、L3538 |
+| 星空、月亮在左舷后上方 | invented | 报告只说「night was clear」；星与月是造出来给夜里的方向感 | L3556 |
+| 三处全景的相机位置（桥楼右舷翼 1.66 m、前甲板、海图室门口 1.56 m） | invented | 相机在哪，决定观众看见什么。桥楼选右舷翼，是因为来船「right on the starboard beam」 | Q7438 |
+| 每个热点的方位角/仰角 | 算出来的 | 不是手摆的：`hotspots.json` 由相机矩阵把世界坐标投到等距圆柱坐标，公式写在 `build_bridge.py` 的 `hotspot_angles()` | — |
+| 网页上实时画的桅灯与火箭 | invented（画面）+ evidenced（事件） | 全景是静的；灯要闪、火箭要升，只能让网页画。它们由 `world.py` 的时钟触发 | `sim/static/scene.html` |
+| 船舱里的船长 | evidenced（在场）+ invented（姿势） | 报告：「the master was awake」，问了两句话 | L3472–L3473、Q7570 |

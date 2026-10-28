@@ -4,6 +4,13 @@
 > 远处一条船在冰区里停着，先闪灯，后放火箭。你能看、能问、能记——你不能改变这条船的方向，
 > 也不能让船长起床。
 
+**场景是 Blender 做的。** 桥楼、前甲板、海图室三处，各渲染成一张 360° 全景，
+网页里可以拖动转身、点东西看、走到别的舱室、跟二副说话。
+全景里没有的那两样东西——远处那条船的桅灯、一枚枚升起的白色火箭——是网页实时画上去的，
+按模拟的钟点出现。
+
+![桥楼，右舷翼，00:15](scene/renders/still_exterior.jpg)
+
 ## 情境（三句话）
 
 1. 你在 1912 年 4 月 15 日凌晨的「加州人号」桥楼上当中班学徒，能看、能问、能往值班簿上写字；
@@ -35,15 +42,27 @@ token 与费用在 [`research/calls.jsonl`](research/calls.jsonl)。
 
 ```powershell
 cd week8
-python sim\server.py          # 需要 Python 3，只用标准库
-# 打开 http://127.0.0.1:8765
+python sim\server.py            # 需要 Python 3，只用标准库
+# 打开 http://127.0.0.1:8765          ← 3D 场景（Blender 全景）
+# 或者 http://127.0.0.1:8765/text     ← 同一局的纯文字版
 ```
 
-- 有 `DEEPSEEK_API_KEY`：每个角色回答都是**真调用**，页眉显示 `真调用 · deepseek-flash`。
-- 没有密钥：`WEEK8_MODE=fixture python sim\server.py` 会重放上次录下的回答，页眉写
-  `录制重放（不是真调用）`，绝不冒充。没录过的句子会直接拒绝（409），不拿别的话顶上。
-- 密钥只从环境变量读，代码里没有、日志里也没有。设置方法见 Week 5 的 `code/set_key.py`
-  （同一个变量，不用再设一次）。
+**在场景里：** 按住拖动或按 ← → 转身；滚轮缩放；画面上亮着的标签是「看它」，
+绿色虚线标签是「换地方」（海图室的门、上桥楼的梯子）。右边是二副的话、值班簿、说话与动作。
+
+- 有 `DEEPSEEK_API_KEY`：每个回答都是**真调用**，页眉显示 `真调用 · deepseek-flash`。
+- 没有密钥：`WEEK8_MODE=fixture python sim\server.py` 重放上次录下的回答，页眉写
+  `录制重放（不是真调用）`，绝不冒充。没录过的句子直接拒绝（409），不拿别的话顶上。
+
+**重建场景**（改一处、渲一张，约 5 分钟；本机 RTX 5070 走 OptiX）：
+
+```powershell
+& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" `
+  --background --factory-startup --python scene\build_bridge.py -- --glb
+```
+
+它会重写 `scene/renders/` 里的三张全景、两张剧照、`bridge.blend`、`bridge.glb`，
+以及网页用来摆标签的 `hotspots.json`（每个物体的方位角／仰角，由相机矩阵算出来，不是手摆的）。
 
 自检（不联网、不花钱）：
 
@@ -55,11 +74,24 @@ python data\verify_kb.py       # 38 条事实，逐一核对引文在原文里�
 本模拟会读 Week 3&4 的两份原文：`../week3&4/sources/raw/british-inquiry-….txt` 与
 `beesley-….txt`。仓库结构不变就不用管；挪了地方就设 `WEEK8_SOURCES` 指向那个目录。
 
+## 场景里有什么
+
+| 位置 | 看得见什么 | 等级 |
+|---|---|---|
+| 桥楼 · 右舷翼 | 罗经柜、机舱车钟、莫尔斯灯、双筒望远镜、传声筒、船钟、值班簿、二副 Stone、轮船舷墙与栏杆、冰区、星空 | 物件与位置=**inferred**（按同时代商船照片布置）；「桥楼／海图室／莫尔斯灯／传声筒／罗经」=**evidenced** |
+| 海图室 | 海图桌、铺开的海图、油灯、墙上的钟、舷窗、半开的门、坐在桌后的船长 | 房间与门=**evidenced**；陈设与尺寸=**inferred**；门开着=**invented** |
+| 前甲板 | 舷墙、桅与支索、绞车、系缆桩、舱口、身前的冰 | **inferred**（报告只说到甲板、冰、专利计程仪零件） |
+| 远处的来船 | 一盏闪动的桅灯、一枚枚升起的白色火箭 | 网页**实时**画出（不是渲染进全景）；位置由 `hotspots.json` 的方位角决定 |
+
+三张全景：`scene/renders/pano_bridge.jpg`、`pano_foredeck.jpg`、`pano_chart_room.jpg`（3072×1536，各 150–300 KB）。
+两张剧照：`still_exterior.jpg`、`still_chart_room.jpg`。模型：`bridge.blend`（可重建）、`bridge.glb`（745 KB）。
+
 ## 这一局里有什么
 
 | 是什么 | 在这份作业里的位置 |
 |---|---|
 | 情境 | 1912 年 4 月 15 日 00:15–02:20，Californian 桥楼／海图室／前甲板 |
+| 场景 | Blender：`scene/build_bridge.py` → 三张 360° 全景 + `hotspots.json` |
 | 角色（agentic） | 二副 Herbert Stone：自己的目标、记忆、感知与动作；由模型决定说什么、做什么 |
 | 剧本化的人 | 船长 Stanley Lord：他的四句话来自报告原文，所以不许模型即兴 |
 | 你 | 中班学徒 James Gibson，二十岁；你的名字与年龄来自他的证词 |
@@ -75,13 +107,25 @@ python data\verify_kb.py       # 38 条事实，逐一核对引文在原文里�
 week8/
 ├── README.md                     你在这里
 ├── questions.md                  这一轮没解决的问题
+├── scene/
+│   ├── build_bridge.py           Blender 建模 + 渲染 + 导出 hotspots.json（全部代码，可重建）
+│   └── renders/
+│       ├── pano_bridge.jpg       桥楼 360°（网页里的主场景）
+│       ├── pano_foredeck.jpg     前甲板 360°
+│       ├── pano_chart_room.jpg   海图室 360°
+│       ├── still_exterior.jpg    剧照：从水面看桥楼
+│       ├── still_chart_room.jpg  剧照：海图室里
+│       ├── hotspots.json         每个热点的方位角/仰角 + 相机位置
+│       ├── bridge.blend          Blender 源文件
+│       └── bridge.glb            导出的模型（745 KB）
 ├── sim/
 │   ├── world.py                  世界：地点、物件、时钟、事件、规则、值班簿、结局
 │   ├── stone.py                  角色 Stone：记忆、感知、动作清单、JSON 校验、 hindsight 检查
 │   ├── model.py                  真调用 + 计费（含峰谷价与缓存命中价）
 │   ├── paths.py                  到哪里找 Week 3&4 的原文
-│   ├── server.py                 标准库 HTTP，只绑 127.0.0.1
-│   ├── static/index.html         一个网页（原生 HTML + JS）
+│   ├── server.py                 标准库 HTTP：/ 场景、/text 文字、/api/*、/scene/* 全景图
+│   ├── static/scene.html         3D 场景页（原生 JS：全景拖动、热点、实时光点与火箭）
+│   ├── static/index.html         文字版（同一局，可键盘玩）
 │   └── fixtures/stone_recorded.json   录制的回答，离线重放用
 ├── data/
 │   ├── californian_kb.json       知识库：38 条事实 + 出处 + 等级
@@ -93,17 +137,9 @@ week8/
 ├── sources/
 │   ├── raw/README.md             为什么这里是空的（见「困难」）
 │   └── processed/tip-day7-extracts.txt   逐字摘录的 Day 7 证词
-├── research/
-│   ├── why-not-a-film.md         这堂课要的回答
-│   ├── sources.md                来源清单
-│   ├── parts-table.md            每一样东西：evidenced / inferred / invented
-│   ├── tools-and-ai.md           每个工具做了什么，AI 做了什么，我查了什么
-│   ├── difficulties.md           真实的困难（含例子）
-│   ├── verification.md           自检记录
-│   ├── cost.md                   花费
-│   ├── calls.jsonl               每一次调用：prompt、输出、usage、费用
-│   └── demo-transcript.md        一局的完整记录
-└── shots/                        截图——见「诚实的边界」
+├── research/                     why-not-a-film / sources / parts-table / tools-and-ai /
+│                                 difficulties / verification / cost / calls.jsonl / demo-transcript
+└── shots/                        浏览器截图——见「诚实的边界」
 ```
 
 ## 四个部件怎么拼起来
@@ -121,42 +157,51 @@ week8/
 4. **API**（Week 5）：真调用，JSON 模式，`response_format` + prompt 里出现 "JSON"，
    每次调用写一行日志，费用按官方价目表算（含峰谷与缓存命中）。
 
+**第五个是这一周加的**：Blender 里把桥楼做出来，渲成全景，网页把它当场景用。
+全景动不了，所以网页补两样动的：那盏桅灯，和升起又熄掉的火箭——它们由世界的时钟驱动，
+和文字版里的「又一枚白色火箭」是同一个事件。
+
 ## 史实与分级
 
 完整表在 [`research/parts-table.md`](research/parts-table.md)。摘要：
 
 - **evidenced**：船停在冰区（10.20）、来船与灯、八枚火箭、1.10 的传声筒问答原文、
   2.00 派学徒的话、2.05 船长的三个问题、2.40 的第二次报告、法庭的判词——全部有 locator。
-- **inferred**：桥楼与海图室的具体陈设、值班簿抄进航海日志的规则、火箭的具体间隔
-  （报告只给「12.45–1.45 之间共约八枚」）。
-- **invented**：动作的时间成本（让 125 分钟压缩成二十来次操作）、页面把玩家的中文当作
-  已译成英语说出、hindsight 检查的词表、`send_down` 的提前分支（记录里没有）。
+  桥楼、海图室、莫尔斯灯、传声筒、罗经、舷窗：报告与证词里都有。
+- **inferred**：桥楼与海图室的具体尺寸与陈设（按同时代商船照片）、值班簿抄进航海日志的规则、
+  火箭的具体间隔（报告只给「12.45–1.45 之间共约八枚」）。
+- **invented**：动作的时间成本、页面把玩家的中文当作已译成英语说出、hindsight 检查的词表、
+  `send_down` 的提前分支、海图室的门半开（让门外的夜光进来）、网页上实时画出来的火箭。
 
 ## 工具与 AI 的分工
 
 摘要见 [`research/tools-and-ai.md`](research/tools-and-ai.md)。一句话：
-**AI 写代码、写台词、写文档；史料的定位、数字、边界由脚本与人工核。**
+**AI 写代码、建场景、写台词、写文档；史料的定位、数字、边界由脚本与人工核。**
 模型只被允许扮演一个人，禁止当叙述者；它说的每句话进日志，说漏了 1912 年不该知道的事会被标出来。
+Blender 由 `scene/build_bridge.py` 无界面驱动（`--background --python`），
+建了什么、渲了几张、改了几轮，都写在那份脚本与 `difficulties.md` 里。
 
 ## 花费
 
 一局（11 个动作、4 次调用）：**输入 6,396 tok / 输出 426 tok / $0.000669**。
-分项在 [`research/cost.md`](research/cost.md)。系统提示约 1.5k tokens，DeepSeek 的前缀缓存
-命中了一部分（每次 hit 768–1408 tok），所以比按全价估算便宜。
+分项在 [`research/cost.md`](research/cost.md)。渲染不花钱：本机 GPU，约 5 分半一整套。
 
 ## 真实的困难
 
-详见 [`research/difficulties.md`](research/difficulties.md)。最要紧的一条：
-**我的第一版设计是错的。** 我原本想让玩家在 1912 年伦敦调查庭的走廊里等 Beesley 被传唤——
-后来查英国调查庭的证人索引，Beesley 根本不在里面，他从未在该庭作证。设计整个作废，
-改成现在这个：Californian 的桥楼，二副 Stone 和学徒 Gibson，两人都在 1912 年 5 月 14 日
-（第 7 天）作过证。
+详见 [`research/difficulties.md`](research/difficulties.md)。最要紧的两条：
+
+- **第一版设计是错的。** 原想让玩家在 1912 年伦敦调查庭的走廊里等 Beesley 被传唤——
+  查证人索引后发现他从未在该庭作证。设计整个作废。
+- **全景里的东西会「藏进」盒子里。** 二副一开始站在实心轮船舱体内部（渲染里根本看不见），
+  海图桌与船长重叠，桥面与甲板顶面同高导致 z-fighting。这些只有渲出来看才知道。
 
 ## 诚实的边界
 
-- **没有截图**：这台机器的 shell 里起不来浏览器（Edge headless 在命名管道上被挡），
-  所以页面只有文字记录与自检，没有图片。页面本身在同学的浏览器里跑得起来——
-  这是环境限制，不是页面限制；`code/check_sim.py` 的 G1 用 HTTP 走过同一条路径。
-- **没做 3D**：这一周的题不要求；用的是一个网页。
-- **船长是剧本**：他的四句话来自报告原文。让他即兴，就是把史料降级成小说。
+- **浏览器截图还没有**：这台机器起不来 headless 浏览器（命名管道被挡），所以 `shots/` 是空的。
+  Blender 的剧照在 `scene/renders/`，网页渲染只在 Node 里做过语法检查、用 HTTP 走过同一串接口。
+  页面本身要在你的浏览器里打开才算验证过——这正是需要你帮忙看一眼的地方。
+- **不是 Unity**：这台机器上没有 Unity（装不了、要登录），所以场景用 Blender + 一个网页前端。
+  老师列的三种里，Blender 与「网页（原生 JS）」都算，Unity 只是「最容易让人走一圈」的那条路；
+  这里用全景 + 热点代替了走路，代价与收益写在 `research/why-not-a-film.md` 第 3 节。
+- **没有 3D 实时漫游**：全景是渲染好的图，不能自由走动；三处之间靠热点跳。
 - **一行代码都没有改 Week 3&4**：本文件夹只读那两份原文。
